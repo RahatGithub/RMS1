@@ -12,23 +12,44 @@
   </head>
   <body class="bg-dark">
     
+    <!-- ***Admin login section starts*** -->
     <div class="d-flex justify-content-center m-3 p-3">
         <form action="" method="post" class="border border-primary m-3 p-4 rounded bg-light"> {% csrf_token %}  
-            <label for="username" class="form-label">Username</label> <br>
-            <input type="text" class="mb-1" name="username" placeholder="username"> <br>
-            <label for="password" class="form-label">Password</label> <br>
-            <input type="password" class="mb-1" name="password" placeholder="*********"> <br>
-            Don't have an account? <a href="../register">Register now</a>
-            <div class="row">
-                <div class="col-md-5">
-                    <input type="submit" class="form-control btn btn-primary my-2" value="Login">
-                </div>
-                <div class="col-md-5">
-                    <a href="../../main/" class="form-control btn btn-outline-primary my-2">Home</a>
-                </div>
+          <h3>Admin Login</h3>  
+          <input type="hidden" name="form_name" value="admin_form"> <!--This is a hidden input just to identify from which form the data is being sent-->
+          <label for="admin_email" class="form-label">Email</label> <br>
+          <input type="email" class="mb-1" name="admin_email" placeholder="john_doe@gmail.com"> <br>
+          <label for="admin_password" class="form-label">Password</label> <br>
+          <input type="password" class="mb-1" name="admin_password" placeholder="*********"> <br>
+          Don't have an account? <a href="../register">Register now</a>
+          <div class="row">
+            <div class="col-md-5">
+              <input type="submit" class="form-control btn btn-primary my-2" value="Login">
             </div>
+          </div>
         </form>
     </div>
+    <!-- ***Admin login section ends*** -->
+
+    <!-- ***Stuff login section starts*** -->
+    <div class="d-flex justify-content-center m-3 p-3">
+      <form action="" method="post" class="border border-primary m-3 p-4 rounded bg-light" name="stuff_form"> {% csrf_token %}  
+        <h3>Stuff Login</h3>  
+        <input type="hidden" name="form_name" value="stuff_form"> <!--This is a hidden input just to identify from which form the data is being sent-->
+        <label for="stuff_email" class="form-label">Email</label> <br>
+        <input type="email" class="mb-1" name="stuff_email" placeholder="john_doe@gmail.com"> <br>
+        <label for="stuff_password" class="form-label">Password</label> <br>
+        <input type="password" class="mb-1" name="stuff_password" placeholder="*********"> <br>
+        Don't have an account? <a href="#">Register now</a>
+        <div class="row">
+            <div class="col-md-5">
+                <input type="submit" class="form-control btn btn-primary my-2" value="Login">
+            </div>
+        </div>
+      </form>
+    </div>
+    <!-- ***Stuff login section ends*** -->
+
 
 
     <!-- Optional JavaScript; choose one of the two! -->
