@@ -3,9 +3,9 @@ from django.db import models
 
 class Batch(models.Model):
     id = models.AutoField
-    batch_id = models.CharField(max_length=18, default="")  # e.g. "CSE-12_2018-2019"
-    batch_no = models.CharField(max_length=6, default="")   # e.g. "CSE-12"
-    session = models.CharField(max_length=8, default="")    # e.g. "2018-2019"
+    batch_id = models.CharField(max_length=18, default="")              # e.g. "CSE-12_2018-2019"
+    batch_no = models.CharField(max_length=6, default="")               # e.g. "CSE-12"
+    session = models.CharField(max_length=8, default="")                # e.g. "2018-2019"
     students_json = models.CharField(max_length=5000, default="")       # e.g. {'2018331500' : {'name':'john doe', 'batch':'CSE-12_2018-2019'...} }
     
 
@@ -30,6 +30,8 @@ class Course(models.Model):
 class Student(models.Model):
     id = models.AutoField 
     reg_no = models.CharField(max_length=10, default="")
+    batch_no = models.CharField(max_length=6, default="")
+    session = models.CharField(max_length=8, default="")   
     name = models.CharField(max_length=60, default="")
     father_name = models.CharField(max_length=60, default="")
     mother_name = models.CharField(max_length=60, default="")
