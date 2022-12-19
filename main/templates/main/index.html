@@ -1,12 +1,35 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home</title>
-</head>
-<body>
-    <h3>This is working!</h3>
-</body>
-</html>
+{% extends 'main/base.html' %}
+
+{% block title %} Main {% endblock %}
+
+
+
+{% block body %}
+
+<section class="batch-list p-3">
+    <h3>Batches: </h3>
+    {% for batch in batches %}
+    <div class="card bg-light w-50 m-3">
+        <div class="card-header">
+            <ul class="nav nav-pills justify-content-end card-header-pills">
+                <li class="nav-item">
+                    <a class="nav-link" href="#">View</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Edit</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link">Delete</a>
+                </li>
+            </ul>
+        </div>
+        <div class="card-body">
+            <h5 class="card-title">{{batch.batch_no}}</h5>
+            <h6 class="card-text">{{batch.session}}</h6>
+            <a href="#" class="btn btn-primary">Go somewhere</a>
+        </div>
+    </div>
+    {% endfor %}
+</section>
+
+{% endblock %}

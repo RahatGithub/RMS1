@@ -39,7 +39,7 @@ def login(request):
             password = request.POST['admin_password']
             username = User.objects.filter(email=email)[0].username
             user = auth.authenticate(request, username=username, password=password)
-            if user:
+            if user.is_superuser: 
                 auth.login(request, user)
                 return redirect("/main/")
             else:           
@@ -49,7 +49,7 @@ def login(request):
             password = request.POST['stuff_password']
             username = User.objects.filter(email=email)[0].username
             user = auth.authenticate(request, username=username, password=password)
-            if user:
+            if user.is_staff:
                 auth.login(request, user)
                 return redirect("/main/")
             else:           
