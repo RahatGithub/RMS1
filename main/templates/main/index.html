@@ -26,10 +26,44 @@
         <div class="card-body">
             <h5 class="card-title">{{batch.batch_no}}</h5>
             <h6 class="card-text">{{batch.session}}</h6>
-            <a href="#" class="btn btn-primary">Go somewhere</a>
         </div>
     </div>
     {% endfor %}
+
+    {% if request.user.is_superuser %}
+    <form method="post" class="w-25 bg-light border border-primary p-3"> {% csrf_token %}  
+        <h6>Add new batch</h6>
+        <div class="form-group">
+            <label for="batch_no">Batch no</label>
+            <select class="form-control" name="batch_no" id="batch_no1">
+              <option>CSE-10</option>
+              <option>CSE-11</option>
+              <option>CSE-12</option>
+              <option>CSE-13</option>
+              <option>CSE-14</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="session">Session</label>
+            <select class="form-control" name="session" id="session1">
+              <option>2016-17</option>
+              <option>2017-18</option>
+              <option>2018-19</option>
+              <option>2019-20</option>
+              <option>2021-22</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Add</button>
+    </form>
+    {% endif %}
 </section>
 
+{% endblock %}
+
+{% block js %}
+<script>
+    if ( window.history.replaceState ) {
+        window.history.replaceState( null, null, window.location.href );
+    }
+</script>
 {% endblock %}
