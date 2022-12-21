@@ -1,0 +1,64 @@
+{% extends 'main/base.html' %}
+
+{% block title %} Students view {% endblock %}
+
+
+{% block body %}
+
+<h1>Batch: {{batch_no}}</h1>
+
+<section class="m-2">
+    <h4>Students:</h4>
+    <table class="table table-hover">
+        <thead>
+          <tr>
+            <th scope="col">Reg</th>
+            <th scope="col">Batch</th>
+            <th scope="col">Session</th>
+            <th scope="col">Name</th>
+            <th scope="col">Father's Name</th>
+            <th scope="col">Mother's Name</th>
+            <th scope="col">Address</th>
+            <th scope="col">Phone</th>
+            <th scope="col">Is residential?</th>
+            <th scope="col">Is CR?</th>
+            <th scope="col">Avg CGPA</th>
+            <th scope="col">Remarks</th>
+          </tr>
+        </thead>
+        <tbody>
+            {% for student in students %}
+            <tr>
+                <td>{{student.reg_no}}</td>
+                <td>{{student.batch_no}}</td>
+                <td>{{student.session}}</td>
+                <td>{{student.name}}</td>
+                <td>{{student.father_name}}</td>
+                <td>{{student.mother_name}}</td>
+                <td>{{student.address}}</td>
+                <td>{{student.phone}}</td>
+                <td>{{student.isResidential}}</td>
+                <td>{{student.isCR}}</td>
+                <td>{{student.average_cgpa}}</td>
+                <td>{{student.remarks}}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+      </table>
+</section>
+
+{% endblock %}
+
+
+
+{% block js %}
+
+<!-- **This js code section should be used in all pages that has a form in it** -->
+<script>
+    if ( window.history.replaceState ) {
+        window.history.replaceState( null, null, window.location.href );
+    }
+</script>
+<!-- **** -->
+
+{% endblock %}

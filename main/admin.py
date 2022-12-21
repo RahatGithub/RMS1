@@ -9,12 +9,12 @@ class BatchAdmin(admin.ModelAdmin):
 
 @admin.register(Semester)
 class SemesterAdmin(admin.ModelAdmin):
-    list_display = ("semester_id", "semester_no")
+    list_display = ("semester_no", "batch_no")
 
 
 @admin.register(Course)
 class CourseAdmin(admin.ModelAdmin):
-    list_display = ("course_id", "course_code", "course_teacher")
+    list_display = ("course_code", "batch_no", "course_teacher")
     
 
 @admin.register(Student)

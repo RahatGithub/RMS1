@@ -1,0 +1,57 @@
+{% extends 'main/base.html' %}
+
+{% block title %} Semester view {% endblock %}
+
+
+{% block body %}
+
+<h1>Batch: {{batch_no}}</h1>
+<h4>Semester: {{semester_no}}</h4>
+
+<section class="course-list p-3">
+    <h3>Courses: </h3>
+    {% for course in courses %}
+    <div class="card bg-light w-50 m-3">
+        <div class="card-header">
+            <ul class="nav nav-pills justify-content-end card-header-pills">
+                <li class="nav-item">
+                    <a class="nav-link" href="#">View</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Edit</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link">Delete</a>
+                </li>
+            </ul>
+        </div>
+        <div class="card-body">
+            <h3 class="card-title">{{course.course_title}} ({{course.course_type}})</h3>
+            <h5 class="card-title">Course code: {{course.course_code}}</h5>
+            <h5 class="card-title">Credits: {{course.course_credits}}</h5>
+            <h5 class="card-title">Teacher: {{course.course_teacher}}</h5>
+        </div>
+    </div>
+    {% endfor %}
+
+    {% if request.user.is_superuser %}
+    <form method="post" class="w-25"> {% csrf_token %}  
+        <button type="submit" class="btn btn-primary">Add new</button>
+    </form>
+    {% endif %}
+</section>
+
+{% endblock %}
+
+
+{% block js %}
+
+<!-- **This js code section should be used in all pages that has a form in it** -->
+<script>
+    if ( window.history.replaceState ) {
+        window.history.replaceState( null, null, window.location.href );
+    }
+</script>
+<!-- **** -->
+
+{% endblock %}

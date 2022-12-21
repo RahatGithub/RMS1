@@ -8,7 +8,7 @@
 
 <section class="batch-list p-3">
     <h3>Batches: </h3>
-    {% for batch in batches %}
+    {% for batch in all_batches %}
     <div class="card bg-light w-50 m-3">
         <div class="card-header">
             <ul class="nav nav-pills justify-content-end card-header-pills">
@@ -26,6 +26,17 @@
         <div class="card-body">
             <h5 class="card-title">{{batch.batch_no}}</h5>
             <h6 class="card-text">{{batch.session}}</h6>
+            <ul class="list-unstyled d-flex">
+                <h6>Semesters: </h6>
+                {% for semester in batch.semesters %}
+                    {% if semester.batch_no == batch.batch_no  %}
+                        <li class="mx-2">
+                            <a href="semester_view/{{semester.batch_no}}/{{semester.semester_no}}">{{semester.semester_no}}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+            <p>Students</p>
         </div>
     </div>
     {% endfor %}
@@ -61,9 +72,13 @@
 {% endblock %}
 
 {% block js %}
+
+<!-- **This js code section should be used in all pages that has a form in it** -->
 <script>
     if ( window.history.replaceState ) {
         window.history.replaceState( null, null, window.location.href );
     }
 </script>
+<!-- **** -->
+
 {% endblock %}
