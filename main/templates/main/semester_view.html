@@ -15,7 +15,7 @@
         <div class="card-header">
             <ul class="nav nav-pills justify-content-end card-header-pills">
                 <li class="nav-item">
-                    <a class="nav-link" href="#">View</a>
+                    <a class="nav-link" href="/main/course_view/{{batch_no}}/{{semester_no}}/{{course.course_type}}/{{course.course_code}}">View</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#">Edit</a>
@@ -35,8 +35,21 @@
     {% endfor %}
 
     {% if request.user.is_superuser %}
-    <form method="post" class="w-25"> {% csrf_token %}  
-        <button type="submit" class="btn btn-primary">Add new</button>
+    <form method="post" class="w-25 bg-light border border-primary p-3"> {% csrf_token %}  
+        <h6>Add new course</h6>
+        <div class="form-group">
+            <label class="form-label">Course title</label>
+            <input type="text" name="course_title"> <br>
+            <label class="form-label">Course code</label>
+            <input type="text" name="course_code"> <br>
+            <label class="form-label">Course type</label>
+            <input type="text" name="course_type"> <br>
+            <label class="form-label">Credits</label>
+            <input type="text" name="course_credits"> <br>
+            <label class="form-label">Course teacher</label>
+            <input type="text" name="course_teacher"> <br>
+        </div>
+        <button type="submit" class="btn btn-primary">Add</button>
     </form>
     {% endif %}
 </section>

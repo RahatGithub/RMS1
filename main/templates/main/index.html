@@ -35,8 +35,13 @@
                         </li>
                     {% endif %}
                 {% endfor %}
+                {% if request.user.is_superuser and batch.semesters|length < 8 %}
+                    <li class="mx-2">
+                        <a href="add_semester/{{batch.batch_no}}">+</a>
+                    </li>
+                {% endif %}
             </ul>
-            <p>Students</p>
+            <p><a href="students_view/{{batch.batch_no}}">Students</a></p>
         </div>
     </div>
     {% endfor %}

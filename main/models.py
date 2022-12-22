@@ -12,12 +12,10 @@ class Semester(models.Model):
     id = models.AutoField 
     batch_no = models.CharField(max_length=8, default="")
     semester_no = models.IntegerField(default=None)
-    courses_json = models.CharField(max_length=5000, default="")
 
    
 class Course(models.Model):
     id = models.AutoField
-    # course_id = models.CharField(max_length=20, default="")
     batch_no = models.CharField(max_length=8, default="")
     semester_no = models.IntegerField(default=None)
     course_code = models.CharField(max_length=8, default="")
@@ -25,7 +23,6 @@ class Course(models.Model):
     course_type =  models.CharField(max_length=10, default="")
     course_credits = models.FloatField(default=0) 
     course_teacher = models.CharField(max_length=40, default="") 
-    # course_results_json = models.CharField(max_length=5000, default="")  # e.g. {'2018331500' : {'GP':'3.75', 'LG':'A'}} 
 
 
 class Student(models.Model):
@@ -42,3 +39,32 @@ class Student(models.Model):
     isCR = models.BooleanField(default=False) 
     average_cgpa = models.FloatField(default=0)
     remarks = models.CharField(max_length=500, default="")
+
+
+class TheoryCourseResult(models.Model):
+    id = models.AutoField 
+    reg_no = models.CharField(max_length=10, default="")
+    batch_no = models.CharField(max_length=6, default="")
+    semester_no = models.IntegerField(default=None)
+    course_code = models.CharField(max_length=8, default="")
+    part_a_decode = models.CharField(max_length=10, default="")
+    part_a_marks = models.IntegerField(default=None)
+    part_b_decode = models.CharField(max_length=10, default="")
+    part_b_marks = models.IntegerField(default=None)
+    assessment_marks = models.IntegerField(default=None)
+    total_marks = models.IntegerField(default=None)
+    GP = models.CharField(max_length=5, default="")
+    LG = models.CharField(max_length=5, default="")
+
+
+class SessionalCourseResult(models.Model):
+    id = models.AutoField 
+    reg_no = models.CharField(max_length=10, default="")
+    batch_no = models.CharField(max_length=6, default="")
+    semester_no = models.IntegerField(default=None)
+    course_code = models.CharField(max_length=8, default="")
+    lab_marks = models.IntegerField(default=None)
+    assessment_marks = models.IntegerField(default=None)
+    total_marks = models.IntegerField(default=None)
+    GP = models.CharField(max_length=5, default="")
+    LG = models.CharField(max_length=5, default="")
