@@ -68,3 +68,16 @@ class SessionalCourseResult(models.Model):
     total_marks = models.IntegerField(default=None)
     GP = models.CharField(max_length=5, default="")
     LG = models.CharField(max_length=5, default="")
+
+
+class TableSheet(models.Model):
+    id = models.AutoField 
+    reg_no = models.CharField(max_length=10, default="")
+    batch_no = models.CharField(max_length=6, default="")
+    semester_no = models.IntegerField(default=None)
+    course_results = models.CharField(max_length=1000, default="")
+    current_semester_credits = models.FloatField(default=0)
+    current_semester_total_GP = models.FloatField(default=0)
+    overall_credits = models.FloatField(default=0)
+    overall_GP = models.FloatField(default=0)
+    

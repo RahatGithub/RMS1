@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
 from .models import Batch, Semester, Course, Student, TheoryCourseResult, SessionalCourseResult
+import json
 
 
 def index(request):
@@ -50,48 +51,44 @@ def semester_view(request, batch_no, semester_no):
     
     courses = Course.objects.filter(batch_no=batch_no, semester_no=semester_no)
     
-    # ***experimental***
-    students = Student.objects.filter(batch_no=batch_no)
-    print("*"*30)
+    # __________________________________experimental___________________________________
+    print("#"*150)
     
-    table_sheet = list()   # a list to store all result records for all students in this semester
+    students = Student.objects.filter(batch_no=batch_no)
+    table_sheet = list()
     
     for student in students:
-        result_entry = dict()   # a dictionary to store result record for each student in this semester
-        reg_no = student.reg_no
-        result_entry['reg_no'] = reg_no
-        result_entry['name'] = student.name
+        record_entry = dict() 
+        record_entry['reg_no'] = student.reg_no
+        record_entry['name'] = student.name 
         
-        total_credits = 0
-        total_GP = 0
+        current_semester_credits = 0
+        current_semester_total_GP = 0
         final_LG = None
         
         for course in courses:
             try: 
-                course_result = TheoryCourseResult.objects.get(batch_no=batch_no, semester_no=semester_no, course_code=course.course_code, reg_no=reg_no)
+                course_result = TheoryCourseResult.objects.get(reg_no=student.reg_no, batch_no=batch_no, semester_no=semester_no, course_code=course.course_code)
             except:
-                course_result = SessionalCourseResult.objects.get(batch_no=batch_no, semester_no=semester_no, course_code=course.course_code, reg_no=reg_no)
+                course_result = SessionalCourseResult.objects.get(reg_no=student.reg_no, batch_no=batch_no, semester_no=semester_no, course_code=course.course_code)
             
-            result_entry[course.course_code] = {'credits' : course.course_credits,
+            record_entry[course.course_code] = {'credits' : course.course_credits,
                                                 'GP' : course_result.GP, 
                                                 'LG' : course_result.LG}
-            total_credits += course.course_credits
-            total_GP += course.course_credits * float(course_result.GP) 
+            current_semester_credits += course.course_credits
+            current_semester_total_GP += course.course_credits * float(course_result.GP) 
         
-        final_GPA =  round((total_GP/total_credits), 2) 
-        result_entry[f"semester {semester_no}"] = {'total_credits' : total_credits,
-                                                   'final_GPA' : final_GPA,
+        current_semester_final_GPA =  round((current_semester_total_GP/current_semester_credits), 2) 
+        record_entry[f"semester {semester_no}"] = {'total_credits' : current_semester_credits,
+                                                   'final_GPA' : current_semester_final_GPA,
                                                    'final_LG' : 'X'}
         
-        table_sheet.append(result_entry)
-        
-    # _____finally printing the output________
-    for record in table_sheet:
-        print(record)
+        table_sheet.append(record_entry) 
     
         
-    print("*"*30)
-    # ******************
+    
+    print("#"*150)
+    # _________________________________________________________________________________
     
     return render(request, 'main/semester_view.html', {'batch_no':batch_no, 'semester_no':semester_no, 'courses':courses})
 
