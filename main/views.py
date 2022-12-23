@@ -47,6 +47,9 @@ def semester_view(request, batch_no, semester_no):
                                        course_credits=course_credits,
                                        course_type=course_type,
                                        course_teacher=course_teacher)
+        
+        courses = Course.objects.filter(batch_no=batch_no, semester_no=semester_no)
+        
         return render(request, 'main/semester_view.html', {'batch_no':batch_no, 'semester_no':semester_no, 'courses':courses})
     
     courses = Course.objects.filter(batch_no=batch_no, semester_no=semester_no)
@@ -101,15 +104,67 @@ def add_semester(request, batch_no):
 
 
 def course_view(request, batch_no, semester_no, course_type, course_code):
-    course_obj = Course.objects.filter(batch_no=batch_no, semester_no=semester_no, course_code=course_code)
-    course = course_obj[0] 
-    if course_type == "Theory": 
-        results = TheoryCourseResult.objects.filter(batch_no=batch_no, semester_no=semester_no, course_code=course_code)
-    elif course_type == "Sessional":
-        results = SessionalCourseResult.objects.filter(batch_no=batch_no, semester_no=semester_no, course_code=course_code)
     
-    params = {'course':course,'results':results}
-    return render(request, 'main/course_view.html', params)
+    course = Course.objects.get(batch_no=batch_no, semester_no=semester_no, course_code=course_code)
+    
+    if request.method == "POST":
+        if course_type == "Theory":
+            reg_no = request.POST['reg_no']
+            part_a_decode = request.POST['part_a_decode']
+            part_a_marks = request.POST['part_a_marks']
+            part_b_decode = request.POST['part_b_decode']
+            part_b_marks = request.POST['part_b_marks']
+            assessment_marks = request.POST['assessment_marks']
+            total_marks = request.POST['total_marks']
+            GP = request.POST['GP']
+            LG = request.POST['LG']
+            
+            TheoryCourseResult.objects.create(reg_no=reg_no, 
+                                              batch_no=batch_no, 
+                                              semester_no=semester_no,
+                                              course_code=course_code,
+                                              part_a_decode=part_a_decode,
+                                              part_a_marks=part_a_marks,
+                                              part_b_decode=part_b_decode,
+                                              part_b_marks=part_b_marks,
+                                              assessment_marks=assessment_marks,
+                                              total_marks=total_marks,
+                                              GP=GP,
+                                              LG=LG )
+            
+            results = TheoryCourseResult.objects.filter(batch_no=batch_no, semester_no=semester_no, course_code=course_code)
+            
+        elif course_type == "Sessional":
+            reg_no = request.POST['reg_no']
+            lab_marks = request.POST['lab_marks']
+            assessment_marks = request.POST['assessment_marks']
+            total_marks = request.POST['total_marks']
+            GP = request.POST['GP']
+            LG = request.POST['LG']
+            
+            SessionalCourseResult.objects.create(reg_no=reg_no, 
+                                              batch_no=batch_no, 
+                                              semester_no=semester_no,
+                                              course_code=course_code,
+                                              lab_marks=lab_marks,
+                                              assessment_marks=assessment_marks,
+                                              total_marks=total_marks,
+                                              GP=GP,
+                                              LG=LG )
+            
+            results = SessionalCourseResult.objects.filter(batch_no=batch_no, semester_no=semester_no, course_code=course_code)
+        
+        params = {'course':course,'results':results}
+        return render(request, 'main/course_view.html', params)
+    
+    else:   
+        if course_type == "Theory": 
+            results = TheoryCourseResult.objects.filter(batch_no=batch_no, semester_no=semester_no, course_code=course_code)
+        elif course_type == "Sessional":
+            results = SessionalCourseResult.objects.filter(batch_no=batch_no, semester_no=semester_no, course_code=course_code)
+        
+        params = {'course':course,'results':results}
+        return render(request, 'main/course_view.html', params)
 
 
 def students_view(request, batch_no):  

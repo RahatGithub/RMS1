@@ -46,6 +46,34 @@
             {% endfor %}
         </tbody>
       </table>
+
+      {% if request.user.is_superuser %}
+      <form method="post" class="w-25 bg-light border border-primary p-3"> {% csrf_token %}  
+        <h6>Add new record</h6>
+        <div class="form-group">
+            <label class="form-label">Reg no</label>
+            <input type="text" name="reg_no"> <br>
+            <label class="form-label">Part A decode</label>
+            <input type="text" name="part_a_decode"> <br>
+            <label class="form-label">Part A marks</label>
+            <input type="number" name="part_a_marks"> <br>
+            <label class="form-label">Part B decode</label>
+            <input type="text" name="part_b_decode"> <br>
+            <label class="form-label">Part B marks</label>
+            <input type="number" name="part_b_marks"> <br>
+            <label class="form-label">Assessment marks</label>
+            <input type="number" name="assessment_marks"> <br>
+            <label class="form-label">Total marks</label>
+            <input type="number" name="total_marks"> <br>
+            <label class="form-label">GP</label>
+            <input type="text" name="GP"> <br>
+            <label class="form-label">LG</label>
+            <input type="text" name="LG"> <br>
+        </div>
+        <button type="submit" class="btn btn-primary">Add</button>
+      </form>
+    {% endif %}
+
 </section>
 {% elif course.course_type == "Sessional" %}
 <section class="mx-2 my-5">
@@ -74,6 +102,27 @@
             {% endfor %}
         </tbody>
       </table>
+      {% if request.user.is_superuser %}
+      <form method="post" class="w-25 bg-light border border-primary p-3"> {% csrf_token %}  
+        <h6>Add new record</h6>
+        <div class="form-group">
+            <label class="form-label">Reg no</label>
+            <input type="text" name="reg_no"> <br>
+            <label class="form-label">Lab marks</label>
+            <input type="text" name="lab_marks"> <br>
+            <label class="form-label">Assessment marks</label>
+            <input type="number" name="assessment_marks"> <br>
+            <label class="form-label">Total marks</label>
+            <input type="number" name="total_marks"> <br>
+            <label class="form-label">GP</label>
+            <input type="text" name="GP"> <br>
+            <label class="form-label">LG</label>
+            <input type="text" name="LG"> <br>
+        </div>
+        <button type="submit" class="btn btn-primary">Add</button>
+      </form>
+    {% endif %}
+
 </section>
 {% endif %}
 
