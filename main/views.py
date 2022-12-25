@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from .models import Batch, Semester, Course, Student, TheoryCourseResult, SessionalCourseResult
+from .models import Batch, Semester, Course, Student, TheoryCourseResult, SessionalCourseResult, TableSheet
 import json
 
 
@@ -50,50 +50,30 @@ def semester_view(request, batch_no, semester_no):
         
         courses = Course.objects.filter(batch_no=batch_no, semester_no=semester_no)
         
-        return render(request, 'main/semester_view.html', {'batch_no':batch_no, 'semester_no':semester_no, 'courses':courses})
+        table_sheet = TableSheet.objects.filter(batch_no=batch_no, semester_no=semester_no)
+        
+        return render(request, 'main/semester_view.html', {'batch_no':batch_no, 'semester_no':semester_no, 'courses':courses, 'table_sheet':table_sheet})
     
+    # if not a POST request:
     courses = Course.objects.filter(batch_no=batch_no, semester_no=semester_no)
     
     # __________________________________experimental___________________________________
     print("#"*150)
     
     students = Student.objects.filter(batch_no=batch_no)
-    table_sheet = list()
-    
-    for student in students:
-        record_entry = dict() 
-        record_entry['reg_no'] = student.reg_no
-        record_entry['name'] = student.name 
-        
-        current_semester_credits = 0
-        current_semester_total_GP = 0
-        final_LG = None
-        
-        for course in courses:
-            try: 
-                course_result = TheoryCourseResult.objects.get(reg_no=student.reg_no, batch_no=batch_no, semester_no=semester_no, course_code=course.course_code)
-            except:
-                course_result = SessionalCourseResult.objects.get(reg_no=student.reg_no, batch_no=batch_no, semester_no=semester_no, course_code=course.course_code)
-            
-            record_entry[course.course_code] = {'credits' : course.course_credits,
-                                                'GP' : course_result.GP, 
-                                                'LG' : course_result.LG}
-            current_semester_credits += course.course_credits
-            current_semester_total_GP += course.course_credits * float(course_result.GP) 
-        
-        current_semester_final_GPA =  round((current_semester_total_GP/current_semester_credits), 2) 
-        record_entry[f"semester {semester_no}"] = {'total_credits' : current_semester_credits,
-                                                   'final_GPA' : current_semester_final_GPA,
-                                                   'final_LG' : 'X'}
-        
-        table_sheet.append(record_entry) 
-    
-        
+    table_sheet = TableSheet.objects.filter(batch_no=batch_no, semester_no=semester_no)
+    for tb in table_sheet: 
+        print(tb.reg_no)
+        print(tb.course_results)
+        print("cur_sem_credits:", tb.current_semester_credits)
+        print("cur_sem_GP:", tb.current_semester_total_GP)
+        print("overall_credits:", tb.overall_credits)
+        print("overall_GP:", tb.overall_GP)
     
     print("#"*150)
     # _________________________________________________________________________________
     
-    return render(request, 'main/semester_view.html', {'batch_no':batch_no, 'semester_no':semester_no, 'courses':courses})
+    return render(request, 'main/semester_view.html', {'batch_no':batch_no, 'semester_no':semester_no, 'courses':courses, 'table_sheet':table_sheet})
 
 
 def add_semester(request, batch_no):
@@ -143,21 +123,81 @@ def course_view(request, batch_no, semester_no, course_type, course_code):
             LG = request.POST['LG']
             
             SessionalCourseResult.objects.create(reg_no=reg_no, 
-                                              batch_no=batch_no, 
-                                              semester_no=semester_no,
-                                              course_code=course_code,
-                                              lab_marks=lab_marks,
-                                              assessment_marks=assessment_marks,
-                                              total_marks=total_marks,
-                                              GP=GP,
-                                              LG=LG )
+                                                 batch_no=batch_no, 
+                                                 semester_no=semester_no,
+                                                 course_code=course_code,
+                                                 lab_marks=lab_marks,
+                                                 assessment_marks=assessment_marks,
+                                                 total_marks=total_marks,
+                                                 GP=GP,
+                                                 LG=LG )
             
             results = SessionalCourseResult.objects.filter(batch_no=batch_no, semester_no=semester_no, course_code=course_code)
+        
+        # ____________________________experimental______________________________
+        
+        # try to get the TableSheet for this particular reg_no, then update this :
+        try: 
+            table_sheet_individual = TableSheet.objects.get(reg_no=reg_no, batch_no=batch_no, semester_no=semester_no)  
+            course_results = json.loads(table_sheet_individual.course_results)
+            course_results[course.course_code] = {'credits' : course.course_credits,
+                                                  'GP' : GP,
+                                                  'LG' : LG }
+            table_sheet_individual.course_results = json.dumps(course_results)
+            table_sheet_individual.current_semester_total_GP += float(GP)
+            if float(GP) >= 2: 
+                table_sheet_individual.current_semester_credits += course.course_credits
+            
+            if semester_no > 1:
+                all_table_sheets = TableSheet.objects.filter(reg_no=reg_no, batch_no=batch_no).exclude(semester_no=semester_no)
+                for tb_sheet in all_table_sheets:
+                    table_sheet_individual.overall_credits = tb_sheet.overall_credits + table_sheet_individual.current_semester_credits   # ??????????????????????
+                    table_sheet_individual.overall_GP = tb_sheet.overall_GP + table_sheet_individual.current_semester_total_GP   # ??????????????????????
+
+            table_sheet_individual.save()
+            
+        # if there are no TableSheet found for this particular reg_no, then create one: 
+        except:
+            # *****Finding the result of this course and converting into JSON*****
+            course_results = dict()
+            course_results[course.course_code] = {'credits' : course.course_credits,
+                                                  'GP' : GP,
+                                                  'LG' : LG }
+            course_results_json = json.dumps(course_results)  # converting the dict to str(JSON)
+            # ********************************************************************
+            
+            # *******************Finding current semester credits*****************
+            current_semester_total_GP = GP
+            if float(GP) >= 2: 
+                current_semester_credits = course.course_credits
+            else : current_semester_credits = 0
+            # ********************************************************************
+            
+            # ********Finding overall credits (all semesters till now)************
+            overall_credits = current_semester_credits 
+            overall_GP = current_semester_total_GP 
+            if semester_no > 1:
+                all_table_sheets = TableSheet.objects.filter(reg_no=reg_no, batch_no=batch_no)
+                for tb_sheet in all_table_sheets:
+                    overall_credits += tb_shett.overall_credits
+                    overall_GP += tb_sheet.overall_GP
+            # ********************************************************************
+            
+            table_sheet_individual = TableSheet.objects.create(reg_no=reg_no, 
+                                                               batch_no=batch_no, 
+                                                               semester_no=semester_no,
+                                                               course_results=course_results_json,
+                                                               current_semester_credits=current_semester_credits,
+                                                               current_semester_total_GP=current_semester_total_GP,
+                                                               overall_credits=overall_credits,
+                                                               overall_GP=overall_GP )
+            # print(table_sheet)
+        # ______________________________________________________________________
         
         params = {'course':course,'results':results}
         return render(request, 'main/course_view.html', params)
     
-    else:   
+    else:   # if not a POST request
         if course_type == "Theory": 
             results = TheoryCourseResult.objects.filter(batch_no=batch_no, semester_no=semester_no, course_code=course_code)
         elif course_type == "Sessional":
