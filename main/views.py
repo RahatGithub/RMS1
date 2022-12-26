@@ -57,9 +57,6 @@ def semester_view(request, batch_no, semester_no):
     # if not a POST request:
     courses = Course.objects.filter(batch_no=batch_no, semester_no=semester_no)
     
-    # __________________________________experimental___________________________________
-    print("#"*150)
-    
     students = Student.objects.filter(batch_no=batch_no)
     table_sheet = TableSheet.objects.filter(batch_no=batch_no, semester_no=semester_no)
     for tb in table_sheet: 
@@ -69,9 +66,6 @@ def semester_view(request, batch_no, semester_no):
         print("cur_sem_GP:", tb.current_semester_total_GP)
         print("overall_credits:", tb.overall_credits)
         print("overall_GP:", tb.overall_GP)
-    
-    print("#"*150)
-    # _________________________________________________________________________________
     
     return render(request, 'main/semester_view.html', {'batch_no':batch_no, 'semester_no':semester_no, 'courses':courses, 'table_sheet':table_sheet})
 
@@ -134,8 +128,6 @@ def course_view(request, batch_no, semester_no, course_type, course_code):
             
             results = SessionalCourseResult.objects.filter(batch_no=batch_no, semester_no=semester_no, course_code=course_code)
         
-        # ____________________________experimental______________________________
-        
         # try to get the TableSheet for this particular reg_no, then update this :
         try: 
             table_sheet_individual = TableSheet.objects.get(reg_no=reg_no, batch_no=batch_no, semester_no=semester_no)  
@@ -147,12 +139,8 @@ def course_view(request, batch_no, semester_no, course_type, course_code):
             table_sheet_individual.current_semester_total_GP += float(GP)
             if float(GP) >= 2: 
                 table_sheet_individual.current_semester_credits += course.course_credits
-            
-            if semester_no > 1:
-                all_table_sheets = TableSheet.objects.filter(reg_no=reg_no, batch_no=batch_no).exclude(semester_no=semester_no)
-                for tb_sheet in all_table_sheets:
-                    table_sheet_individual.overall_credits = tb_sheet.overall_credits + table_sheet_individual.current_semester_credits   # ??????????????????????
-                    table_sheet_individual.overall_GP = tb_sheet.overall_GP + table_sheet_individual.current_semester_total_GP   # ??????????????????????
+                table_sheet_individual.overall_credits += course.course_credits
+                table_sheet_individual.overall_GP += float(GP)
 
             table_sheet_individual.save()
             
@@ -167,7 +155,7 @@ def course_view(request, batch_no, semester_no, course_type, course_code):
             # ********************************************************************
             
             # *******************Finding current semester credits*****************
-            current_semester_total_GP = GP
+            current_semester_total_GP = float(GP)
             if float(GP) >= 2: 
                 current_semester_credits = course.course_credits
             else : current_semester_credits = 0
@@ -177,10 +165,9 @@ def course_view(request, batch_no, semester_no, course_type, course_code):
             overall_credits = current_semester_credits 
             overall_GP = current_semester_total_GP 
             if semester_no > 1:
-                all_table_sheets = TableSheet.objects.filter(reg_no=reg_no, batch_no=batch_no)
-                for tb_sheet in all_table_sheets:
-                    overall_credits += tb_shett.overall_credits
-                    overall_GP += tb_sheet.overall_GP
+                prev_table_sheet = TableSheet.objects.get(reg_no=reg_no, batch_no=batch_no, semester_no=semester_no-1)
+                overall_credits = prev_table_sheet.overall_credits + current_semester_credits
+                overall_GP = prev_table_sheet.overall_GP + current_semester_total_GP 
             # ********************************************************************
             
             table_sheet_individual = TableSheet.objects.create(reg_no=reg_no, 
@@ -191,8 +178,6 @@ def course_view(request, batch_no, semester_no, course_type, course_code):
                                                                current_semester_total_GP=current_semester_total_GP,
                                                                overall_credits=overall_credits,
                                                                overall_GP=overall_GP )
-            # print(table_sheet)
-        # ______________________________________________________________________
         
         params = {'course':course,'results':results}
         return render(request, 'main/course_view.html', params)
