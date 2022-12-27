@@ -54,6 +54,56 @@
     {% endif %}
 </section>
 
+{% for tb_sheet in table_sheet %}
+    {% for course in courses %}
+        {{tb_sheet.course_results}}
+    {% endfor %}
+{% endfor %}
+
+<section class="m-2">
+    <h4>Tabulation sheet:</h4>
+    <table class="table table-bordered">
+        <thead>
+            <tr class="text-center">
+                <th scope="col" rowspan="2">Reg no</th>
+                <th scope="col" rowspan="2">Student Name</th>
+                {% for course in courses %}
+                    <th scope="col" colspan="2">{{course.course_code}} <br> {{course.course_credits}}</th>
+                {% endfor %}
+                <th scope="col" colspan="3">Semester: {{semester_no}}</th>
+                {% if semester_no > 1 %}
+                    <th scope="col" colspan="3" class="bg-secondary text-light">Semester: 1 to {{semester_no}}</th>
+                {% endif %}
+            </tr>
+            <tr class="text-center">
+                {% for course in courses %}
+                    <th>GP</th>
+                    <th>LG</th>
+                {% endfor %}
+                <th>credit</th>
+                <th>GPA</th>
+                <th>LG</th>
+                {% if semester_no > 1 %}
+                    <th class="bg-secondary text-light">credit</th>
+                    <th class="bg-secondary text-light">CGPA</th>
+                    <th class="bg-secondary text-light">LG</th>
+                {% endif %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for tb_sheet in table_sheet %}
+                <tr class="text-center">
+                    <td>{{tb_sheet.reg_no}}</td>
+                    <td>{{tb_sheet.name}}</td>
+                    {% for result in tb_sheet.course_results %}
+                        
+                    {% endfor %}
+                </tr> 
+            {% endfor %}
+        </tbody>
+      </table>
+</section>
+
 {% endblock %}
 
 

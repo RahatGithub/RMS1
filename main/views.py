@@ -58,14 +58,29 @@ def semester_view(request, batch_no, semester_no):
     courses = Course.objects.filter(batch_no=batch_no, semester_no=semester_no)
     
     students = Student.objects.filter(batch_no=batch_no)
-    table_sheet = TableSheet.objects.filter(batch_no=batch_no, semester_no=semester_no)
-    for tb in table_sheet: 
-        print(tb.reg_no)
-        print(tb.course_results)
-        print("cur_sem_credits:", tb.current_semester_credits)
-        print("cur_sem_GP:", tb.current_semester_total_GP)
-        print("overall_credits:", tb.overall_credits)
-        print("overall_GP:", tb.overall_GP)
+    table_sheet_objects = TableSheet.objects.filter(batch_no=batch_no, semester_no=semester_no)
+    
+    table_sheet = list()
+    for tb_sheet in table_sheet_objects:
+        a_record = dict()
+        a_record['reg_no'] = tb_sheet.reg_no
+        student = Student.objects.filter(batch_no=batch_no, reg_no=tb_sheet.reg_no).first()
+        a_record['name'] = student.name 
+        a_record['batch_no'] = tb_sheet.batch_no
+        a_record['semester_no'] = tb_sheet.semester_no
+        a_record['course_results'] = json.loads(tb_sheet.course_results)
+        a_record['current_semester_credits'] = tb_sheet.current_semester_credits
+        a_record['current_semester_total_GP'] = tb_sheet.current_semester_total_GP
+        a_record['overall_credits'] = tb_sheet.overall_credits
+        a_record['overall_GP'] = tb_sheet.overall_GP
+        
+        table_sheet.append(a_record)
+        
+        print("*"*200)
+        print(table_sheet[0]['course_results'])
+        print("*"*200)
+        # for course in courses: print(course.course_code)
+        # print("*"*200)
     
     return render(request, 'main/semester_view.html', {'batch_no':batch_no, 'semester_no':semester_no, 'courses':courses, 'table_sheet':table_sheet})
 
