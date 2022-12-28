@@ -54,9 +54,9 @@
     {% endif %}
 </section>
 
-{% for tb_sheet in table_sheet %}
-    {% for course in courses %}
-        {{tb_sheet.course_results}}
+{% for tb_sheet in table_sheet %} 
+    {% for k,v in tb_sheet.course_results.items %}
+        {{k}} : {{v.LG}} <br>
     {% endfor %}
 {% endfor %}
 
@@ -95,9 +95,18 @@
                 <tr class="text-center">
                     <td>{{tb_sheet.reg_no}}</td>
                     <td>{{tb_sheet.name}}</td>
-                    {% for result in tb_sheet.course_results %}
-                        
+                    {% for course, result in tb_sheet.course_results.items %}
+                        <td>{{result.GP}}</td>
+                        <td>{{result.LG}}</td>
                     {% endfor %}
+                    <td>{{tb_sheet.current_semester_credits}}</td>
+                    <td>{{tb_sheet.current_semester_GPA}}</td>
+                    <td>-</td>
+                    {% if semester_no > 1 %}
+                        <th class="bg-secondary text-light">{{tb_sheet.overall_credits}}</th>
+                        <th class="bg-secondary text-light">{{tb_sheet.overall_CGPA}}</th>
+                        <th class="bg-secondary text-light">-</th>
+                {% endif %}
                 </tr> 
             {% endfor %}
         </tbody>

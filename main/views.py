@@ -70,16 +70,39 @@ def semester_view(request, batch_no, semester_no):
         a_record['semester_no'] = tb_sheet.semester_no
         a_record['course_results'] = json.loads(tb_sheet.course_results)
         a_record['current_semester_credits'] = tb_sheet.current_semester_credits
-        a_record['current_semester_total_GP'] = tb_sheet.current_semester_total_GP
+        
+        # ********* Current semester GPA: ************
+        current_semester_GPA = float(0)
+        for course, result in a_record['course_results'].items():
+            current_semester_GPA += result['credits'] * float(result['GP'])
+        current_semester_GPA = round((current_semester_GPA / float(tb_sheet.current_semester_credits)), 2)
+        # ********************************************
+        a_record['current_semester_GPA'] = current_semester_GPA
+        
         a_record['overall_credits'] = tb_sheet.overall_credits
-        a_record['overall_GP'] = tb_sheet.overall_GP
+        a_record['overall_CGPA'] = round((tb_sheet.overall_GP / tb_sheet.overall_credits), 2)
+        # a_record = list()
+        # a_record.append(tb_sheet.reg_no)
+        # student = Student.objects.filter(batch_no=batch_no, reg_no=tb_sheet.reg_no).first()
+        # a_record.append(student.name)
+        # a_record.append(tb_sheet.batch_no)
+        # a_record.append(tb_sheet.semester_no)
+        # a_record.append(json.loads(tb_sheet.course_results))
+        # a_record.append(tb_sheet.current_semester_credits)
+        # a_record.append(tb_sheet.current_semester_total_GP)
+        # a_record.append(tb_sheet.overall_credits)
+        # a_record.append(tb_sheet.overall_GP)
         
         table_sheet.append(a_record)
         
-        print("*"*200)
-        print(table_sheet[0]['course_results'])
-        print("*"*200)
-        # for course in courses: print(course.course_code)
+        # for k in a_record['course_results']:
+        #     print(k, a_record['course_results'][k])
+        # print("*"*100)
+        # for tb_sheet in table_sheet:
+        #     for course in courses:
+        #         print(tb_sheet['course_results'][course.course_code]['GP'])
+        # print("*"*100)
+        # for course in courses: print(type(course))
         # print("*"*200)
     
     return render(request, 'main/semester_view.html', {'batch_no':batch_no, 'semester_no':semester_no, 'courses':courses, 'table_sheet':table_sheet})
