@@ -53,7 +53,7 @@ class TheoryCourseResult(models.Model):
     part_b_marks = models.IntegerField(default=None)
     assessment_marks = models.IntegerField(default=None)
     total_marks = models.IntegerField(default=None)
-    GP = models.CharField(max_length=5, default="")
+    GP = models.FloatField(default=0)
     LG = models.CharField(max_length=5, default="")
 
 
@@ -66,18 +66,16 @@ class SessionalCourseResult(models.Model):
     lab_marks = models.IntegerField(default=None)
     assessment_marks = models.IntegerField(default=None)
     total_marks = models.IntegerField(default=None)
-    GP = models.CharField(max_length=5, default="")
+    GP = models.FloatField(default=0)
     LG = models.CharField(max_length=5, default="")
 
 
-class TableSheet(models.Model):
+class Result(models.Model):
     id = models.AutoField 
     reg_no = models.CharField(max_length=10, default="")
     batch_no = models.CharField(max_length=6, default="")
     semester_no = models.IntegerField(default=None)
     course_results = models.CharField(max_length=1000, default="")
     current_semester_credits = models.FloatField(default=0)
-    current_semester_total_GP = models.FloatField(default=0)
-    overall_credits = models.FloatField(default=0)
-    overall_GP = models.FloatField(default=0)
-    
+    current_semester_total_point = models.FloatField(default=0)
+    current_semester_GPA = models.FloatField(default=0)

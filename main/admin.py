@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Batch, Semester, Course, Student, TheoryCourseResult, SessionalCourseResult, TableSheet
+from .models import Batch, Semester, Course, Student, TheoryCourseResult, SessionalCourseResult, Result
 
 
 @admin.register(Batch)
@@ -30,6 +30,6 @@ class CourseAdmin(admin.ModelAdmin):
 class CourseAdmin(admin.ModelAdmin):
     list_display = ("reg_no", "course_code", "batch_no", "GP", "LG")
     
-@admin.register(TableSheet)
+@admin.register(Result)
 class CourseAdmin(admin.ModelAdmin):
-    list_display = ("reg_no", "batch_no", "semester_no", "current_semester_credits", "overall_credits")
+    list_display = ("reg_no", "batch_no", "semester_no", "current_semester_credits", "current_semester_total_point")

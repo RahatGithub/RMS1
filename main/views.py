@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from .models import Batch, Semester, Course, Student, TheoryCourseResult, SessionalCourseResult, TableSheet
+from .models import Batch, Semester, Course, Student, TheoryCourseResult, SessionalCourseResult, Result
 import json
 
 
@@ -50,60 +50,72 @@ def semester_view(request, batch_no, semester_no):
         
         courses = Course.objects.filter(batch_no=batch_no, semester_no=semester_no)
         
-        table_sheet = TableSheet.objects.filter(batch_no=batch_no, semester_no=semester_no)
+        result = Result.objects.filter(batch_no=batch_no, semester_no=semester_no)
         
-        return render(request, 'main/semester_view.html', {'batch_no':batch_no, 'semester_no':semester_no, 'courses':courses, 'table_sheet':table_sheet})
+        return render(request, 'main/semester_view.html', {'batch_no':batch_no, 'semester_no':semester_no, 'courses':courses, 'result':result})
     
     # if not a POST request:
     courses = Course.objects.filter(batch_no=batch_no, semester_no=semester_no)
     
     students = Student.objects.filter(batch_no=batch_no)
-    table_sheet_objects = TableSheet.objects.filter(batch_no=batch_no, semester_no=semester_no)
+    result_objects = Result.objects.filter(batch_no=batch_no, semester_no=semester_no)
     
     table_sheet = list()
-    for tb_sheet in table_sheet_objects:
+    for result in result_objects:
         a_record = dict()
-        a_record['reg_no'] = tb_sheet.reg_no
-        student = Student.objects.filter(batch_no=batch_no, reg_no=tb_sheet.reg_no).first()
+        a_record['reg_no'] = result.reg_no
+        student = Student.objects.filter(batch_no=batch_no, reg_no=result.reg_no).first()
         a_record['name'] = student.name 
-        a_record['batch_no'] = tb_sheet.batch_no
-        a_record['semester_no'] = tb_sheet.semester_no
-        a_record['course_results'] = json.loads(tb_sheet.course_results)
-        a_record['current_semester_credits'] = tb_sheet.current_semester_credits
+        a_record['batch_no'] = result.batch_no
+        a_record['semester_no'] = result.semester_no
+        a_record['course_results'] = json.loads(result.course_results)
+        a_record['current_semester_credits'] = result.current_semester_credits
         
-        # ********* Current semester GPA: ************
-        current_semester_GPA = float(0)
-        for course, result in a_record['course_results'].items():
-            current_semester_GPA += result['credits'] * float(result['GP'])
-        current_semester_GPA = round((current_semester_GPA / float(tb_sheet.current_semester_credits)), 2)
-        # ********************************************
-        a_record['current_semester_GPA'] = current_semester_GPA
+        # ********* Current semester GPA: **********************
+        a_record['current_semester_GPA'] = result.current_semester_GPA
+        # ******************************************************
         
-        a_record['overall_credits'] = tb_sheet.overall_credits
-        a_record['overall_CGPA'] = round((tb_sheet.overall_GP / tb_sheet.overall_credits), 2)
-        # a_record = list()
-        # a_record.append(tb_sheet.reg_no)
-        # student = Student.objects.filter(batch_no=batch_no, reg_no=tb_sheet.reg_no).first()
-        # a_record.append(student.name)
-        # a_record.append(tb_sheet.batch_no)
-        # a_record.append(tb_sheet.semester_no)
-        # a_record.append(json.loads(tb_sheet.course_results))
-        # a_record.append(tb_sheet.current_semester_credits)
-        # a_record.append(tb_sheet.current_semester_total_GP)
-        # a_record.append(tb_sheet.overall_credits)
-        # a_record.append(tb_sheet.overall_GP)
+        # ********* Current semester LG: **********************
+        GPA = result.current_semester_GPA
+        if GPA == 4.00 : LG = "A+"
+        elif GPA >= 3.75 : LG = "A"
+        elif GPA >= 3.50 : LG = "A-" 
+        elif GPA >= 3.25 : LG = "B+"
+        elif GPA >= 3.00 : LG = "B"
+        elif GPA >= 2.75 : LG = "B-"
+        elif GPA >= 2.50 : LG = "C+"
+        elif GPA >= 2.25 : LG = "C"
+        elif GPA >= 2.00 : LG = "C-" 
+        else: LG = "F"
+        a_record['current_semester_LG'] = LG
+        # ******************************************************
+        
+        # ******** Overall credits, CGPA, LG *******************
+        if result.semester_no > 1:
+            prev_results = Result.objects.filter(batch_no=batch_no, reg_no=result.reg_no).exclude(semester_no=semester_no)
+            overall_credits, overall_point = result.current_semester_credits, result.current_semester_total_point
+            for res in prev_results:
+                overall_credits += res.current_semester_credits
+                overall_point += res.current_semester_total_point
+            
+            a_record['overall_credits'] = overall_credits
+            a_record['overall_CGPA'] = round((overall_point/overall_credits), 2) 
+            
+            CGPA = a_record['overall_CGPA']
+            if CGPA == 4.00 : LG = "A+"
+            elif CGPA >= 3.75 : LG = "A"
+            elif CGPA >= 3.50 : LG = "A-" 
+            elif CGPA >= 3.25 : LG = "B+"
+            elif CGPA >= 3.00 : LG = "B"
+            elif CGPA >= 2.75 : LG = "B-"
+            elif CGPA >= 2.50 : LG = "C+"
+            elif CGPA >= 2.25 : LG = "C"
+            elif CGPA >= 2.00 : LG = "C-" 
+            else: LG = "F"
+            a_record['overall_LG'] = LG
+        # ******************************************************
         
         table_sheet.append(a_record)
-        
-        # for k in a_record['course_results']:
-        #     print(k, a_record['course_results'][k])
-        # print("*"*100)
-        # for tb_sheet in table_sheet:
-        #     for course in courses:
-        #         print(tb_sheet['course_results'][course.course_code]['GP'])
-        # print("*"*100)
-        # for course in courses: print(type(course))
-        # print("*"*200)
     
     return render(request, 'main/semester_view.html', {'batch_no':batch_no, 'semester_no':semester_no, 'courses':courses, 'table_sheet':table_sheet})
 
@@ -141,7 +153,7 @@ def course_view(request, batch_no, semester_no, course_type, course_code):
                                               part_b_marks=part_b_marks,
                                               assessment_marks=assessment_marks,
                                               total_marks=total_marks,
-                                              GP=GP,
+                                              GP=float(GP),
                                               LG=LG )
             
             results = TheoryCourseResult.objects.filter(batch_no=batch_no, semester_no=semester_no, course_code=course_code)
@@ -161,28 +173,27 @@ def course_view(request, batch_no, semester_no, course_type, course_code):
                                                  lab_marks=lab_marks,
                                                  assessment_marks=assessment_marks,
                                                  total_marks=total_marks,
-                                                 GP=GP,
+                                                 GP=float(GP),
                                                  LG=LG )
             
             results = SessionalCourseResult.objects.filter(batch_no=batch_no, semester_no=semester_no, course_code=course_code)
         
-        # try to get the TableSheet for this particular reg_no, then update this :
+        # try to get the Result for this particular reg_no, then update this :
         try: 
-            table_sheet_individual = TableSheet.objects.get(reg_no=reg_no, batch_no=batch_no, semester_no=semester_no)  
-            course_results = json.loads(table_sheet_individual.course_results)
+            result_individual = Result.objects.get(reg_no=reg_no, batch_no=batch_no, semester_no=semester_no)  
+            course_results = json.loads(result_individual.course_results)
             course_results[course.course_code] = {'credits' : course.course_credits,
                                                   'GP' : GP,
                                                   'LG' : LG }
-            table_sheet_individual.course_results = json.dumps(course_results)
-            table_sheet_individual.current_semester_total_GP += float(GP)
+            result_individual.course_results = json.dumps(course_results)
             if float(GP) >= 2: 
-                table_sheet_individual.current_semester_credits += course.course_credits
-                table_sheet_individual.overall_credits += course.course_credits
-                table_sheet_individual.overall_GP += float(GP)
+                result_individual.current_semester_credits += course.course_credits
+                result_individual.current_semester_total_point += float(GP)*course.course_credits  
+                result_individual.current_semester_GPA = round((result_individual.current_semester_total_point / result_individual.current_semester_credits), 2)
 
-            table_sheet_individual.save()
+            result_individual.save()
             
-        # if there are no TableSheet found for this particular reg_no, then create one: 
+        # if there are no Result found for this particular reg_no, then create one: 
         except:
             # *****Finding the result of this course and converting into JSON*****
             course_results = dict()
@@ -192,30 +203,25 @@ def course_view(request, batch_no, semester_no, course_type, course_code):
             course_results_json = json.dumps(course_results)  # converting the dict to str(JSON)
             # ********************************************************************
             
-            # *******************Finding current semester credits*****************
-            current_semester_total_GP = float(GP)
+            
+            # **********Finding current semester total credits and total points**********
             if float(GP) >= 2: 
                 current_semester_credits = course.course_credits
-            else : current_semester_credits = 0
-            # ********************************************************************
+                current_semester_total_point = round((float(GP) * current_semester_credits), 2)
+                current_semester_GPA = float(GP)
+            else : 
+                current_semester_credits = 0
+                current_semester_total_point = 0
+                current_semester_GPA = 0
+            # ***************************************************************************
             
-            # ********Finding overall credits (all semesters till now)************
-            overall_credits = current_semester_credits 
-            overall_GP = current_semester_total_GP 
-            if semester_no > 1:
-                prev_table_sheet = TableSheet.objects.get(reg_no=reg_no, batch_no=batch_no, semester_no=semester_no-1)
-                overall_credits = prev_table_sheet.overall_credits + current_semester_credits
-                overall_GP = prev_table_sheet.overall_GP + current_semester_total_GP 
-            # ********************************************************************
-            
-            table_sheet_individual = TableSheet.objects.create(reg_no=reg_no, 
-                                                               batch_no=batch_no, 
-                                                               semester_no=semester_no,
-                                                               course_results=course_results_json,
-                                                               current_semester_credits=current_semester_credits,
-                                                               current_semester_total_GP=current_semester_total_GP,
-                                                               overall_credits=overall_credits,
-                                                               overall_GP=overall_GP )
+            result_individual = Result.objects.create(reg_no=reg_no, 
+                                                      batch_no=batch_no, 
+                                                      semester_no=semester_no,
+                                                      course_results=course_results_json,
+                                                      current_semester_credits=current_semester_credits,
+                                                      current_semester_total_point=current_semester_total_point, 
+                                                      current_semester_GPA=current_semester_GPA)
         
         params = {'course':course,'results':results}
         return render(request, 'main/course_view.html', params)
