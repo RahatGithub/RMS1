@@ -73,7 +73,7 @@ class SessionalCourseResult(models.Model):
 class Result(models.Model):
     id = models.AutoField 
     reg_no = models.CharField(max_length=10, default="")
-    batch_no = models.CharField(max_length=6, default="")
+    batch_no = models.CharField(max_length=6, default="") # take session instead
     semester_no = models.IntegerField(default=None)
     course_results = models.CharField(max_length=1000, default="")
     current_semester_credits = models.FloatField(default=0)

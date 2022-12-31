@@ -56,7 +56,6 @@ def semester_view(request, batch_no, semester_no):
     
     # if not a POST request:
     courses = Course.objects.filter(batch_no=batch_no, semester_no=semester_no)
-    
     students = Student.objects.filter(batch_no=batch_no)
     result_objects = Result.objects.filter(batch_no=batch_no, semester_no=semester_no)
     
