@@ -91,8 +91,17 @@ def semester_view(request, batch_no, semester_no):
         
         # ******** Overall credits, CGPA, LG *******************
         if result.semester_no > 1:
-            prev_results = Result.objects.filter(batch_no=batch_no, reg_no=result.reg_no).exclude(semester_no=semester_no)
+            prev_results = []
+            for sem in range(1, semester_no):
+                try:
+                    semester = Result.objects.get(batch_no=batch_no, reg_no=result.reg_no, semester_no=sem)
+                    prev_results.append(semester)
+                except:
+                    pass
+            for p_res in prev_results: print(p_res.semester_no, p_res.reg_no)
+            # prev_results = Result.objects.filter(batch_no=batch_no, reg_no=result.reg_no).exclude(semester_no=semester_no)
             overall_credits, overall_point = result.current_semester_credits, result.current_semester_total_point
+            
             for res in prev_results:
                 overall_credits += res.current_semester_credits
                 overall_point += res.current_semester_total_point
@@ -114,6 +123,8 @@ def semester_view(request, batch_no, semester_no):
             a_record['overall_LG'] = LG
         # ******************************************************
         
+            a_record['range'] = range(2*(len(courses)-len(a_record['course_results'])))
+            
         table_sheet.append(a_record)
     
     return render(request, 'main/semester_view.html', {'batch_no':batch_no, 'semester_no':semester_no, 'courses':courses, 'table_sheet':table_sheet})
