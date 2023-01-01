@@ -98,8 +98,7 @@ def semester_view(request, batch_no, semester_no):
                     prev_results.append(semester)
                 except:
                     pass
-            for p_res in prev_results: print(p_res.semester_no, p_res.reg_no)
-            # prev_results = Result.objects.filter(batch_no=batch_no, reg_no=result.reg_no).exclude(semester_no=semester_no)
+            
             overall_credits, overall_point = result.current_semester_credits, result.current_semester_total_point
             
             for res in prev_results:
@@ -249,3 +248,32 @@ def course_view(request, batch_no, semester_no, course_type, course_code):
 def students_view(request, batch_no):  
     students = Student.objects.filter(batch_no=batch_no)
     return render(request, 'main/students_view.html', {'batch_no':batch_no, 'students':students})
+
+
+def gradesheet_view(request, session, reg_no):
+    batch = Batch.objects.get(session=session)
+    batch_no = batch.batch_no
+    student = Student.objects.get(reg_no=reg_no)
+    student_name = student.name 
+    
+    gradesheet = list()
+    semester_results = Result.objects.filter(reg_no=reg_no)
+    for result in semester_results:
+        this_semester = list()
+        course_results = json.loads(result.course_results)
+        for cour in course_results.items():
+            course_info = dict()
+            course_info['course_code'] = cour[0]
+            course = Course.objects.filter(batch_no=batch_no, course_code=cour[0]).first() 
+            course_info['course_title'] = course.course_title
+            course_info['credits'] = course.course_credits
+            course_info['GP'] = cour[1]['GP']
+            course_info['LG'] = cour[1]['LG']
+            
+            this_semester.append(course_info)
+
+        gradesheet.append(this_semester)        
+
+    # for gs in gradesheet : print(gs, end="\n\n")
+        
+    return render(request, 'main/gradesheet_view.html', {'session':session, 'reg_no':reg_no, 'student_name':student_name, 'gradesheet':gradesheet})
