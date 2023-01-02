@@ -259,8 +259,9 @@ def gradesheet_view(request, session, reg_no):
     gradesheet = list()
     semester_results = Result.objects.filter(reg_no=reg_no)
     for result in semester_results:
-        this_semester = list()
+        a_semester = list()
         course_results = json.loads(result.course_results)
+        # cumulative_credits, cumulative_point, cumulative_LG = float(0), float(0), 'NA'
         for cour in course_results.items():
             course_info = dict()
             course_info['course_code'] = cour[0]
@@ -269,10 +270,15 @@ def gradesheet_view(request, session, reg_no):
             course_info['credits'] = course.course_credits
             course_info['GP'] = cour[1]['GP']
             course_info['LG'] = cour[1]['LG']
+            # if course_info['GP'] >= 2: 
+            #     cumulative_credits += course_info['credits']
+            #     cumulative_point += course_info['GP'] * course_info['credits']
             
-            this_semester.append(course_info)
+            a_semester.append(course_info)
 
-        gradesheet.append(this_semester)        
+            # cumulative_GP = round((cumulative_point/cumulative_credits), 2)
+            
+        gradesheet.append(a_semester)        
 
     # for gs in gradesheet : print(gs, end="\n\n")
         

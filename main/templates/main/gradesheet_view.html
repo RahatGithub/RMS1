@@ -83,6 +83,65 @@
 </section>
 <!-- ********* Top section ends ********** -->
 
+<section class="m-5">
+{% for a_semester in gradesheet %}
 
+{% if forloop.counter is 1 %}
+<h4>First Year First Semester</h4>
+{% elif forloop.counter is 2 %}
+<h4>First Year Second Semester</h4>
+{% elif forloop.counter is 3 %}
+<h4>Second Year First Semester</h4>
+{% elif forloop.counter is 4 %}
+<h4>Second Year Second Semester</h4>
+{% elif forloop.counter is 5 %}
+<h4>Third Year First Semester</h4>
+{% elif forloop.counter is 6 %}
+<h4>Third Year Second Semester</h4>
+{% elif forloop.counter is 7 %}
+<h4>Fourth Year First Semester</h4>
+{% elif forloop.counter is 8 %}
+<h4>Fourth Year Second Semester</h4>
+{% endif %}
+
+<table class="table table-bordered mb-5">
+		<thead>
+				<th>Course code</th>
+				<th>Course title</th>
+				<th>Credit</th>
+				<th>Grade point</th>
+				<th>Letter grade</th>
+		</thead>
+
+		<tbody>
+		{% for course_info in a_semester %}
+		<tr>
+				<td>{{course_info.course_code}}</td>
+				<td>{{course_info.course_title}}</td>
+				<td>{{course_info.credits}}</td>
+				<td>{{course_info.GP}}</td>
+				<td>{{course_info.LG}}</td>
+		</tr>
+		{% endfor %}
+
+    <tr>
+        <td colspan="2" class="text-right"><b>This Semester Total:</b></td>
+        <td>NA</td>
+        <td>NA</td>
+        <td>NA</td>
+    </tr>
+		<tr>
+        <td colspan="2" class="text-right"><b>Cumulative:</b></td>
+        <td>NA</td>
+        <td>NA</td>
+        <td>NA</td>
+    </tr>
+
+  </tbody>
+</table>				
+{% endfor %} 
+
+</section>
+		
 
 {% endblock %}
