@@ -114,27 +114,27 @@
 		</thead>
 
 		<tbody>
-		{% for course_info in a_semester %}
+		{% for course_info in a_semester.course_results_info %}
 		<tr>
-				<td>{{course_info.course_code}}</td>
-				<td>{{course_info.course_title}}</td>
-				<td>{{course_info.credits}}</td>
-				<td>{{course_info.GP}}</td>
-				<td>{{course_info.LG}}</td>
+				<td>{{course_info.0}}</td>
+				<td>{{course_info.1}}</td>
+				<td>{{course_info.2}}</td>
+				<td>{{course_info.3}}</td>
+				<td>{{course_info.4}}</td>
 		</tr>
 		{% endfor %}
 
     <tr>
         <td colspan="2" class="text-right"><b>This Semester Total:</b></td>
-        <td>NA</td>
-        <td>NA</td>
-        <td>NA</td>
+        <td>{{a_semester.this_semester_credits}}</td>
+        <td>{{a_semester.this_semester_GP}}</td>
+        <td>{{a_semester.this_semester_LG}}</td>
     </tr>
 		<tr>
         <td colspan="2" class="text-right"><b>Cumulative:</b></td>
-        <td>NA</td>
-        <td>NA</td>
-        <td>NA</td>
+        <td>{{a_semester.cumulative_credits}}</td>
+        <td>{{a_semester.cumulative_GP}}</td>
+        <td>{{a_semester.cumulative_LG}}</td>
     </tr>
 
   </tbody>
