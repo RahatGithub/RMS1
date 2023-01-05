@@ -16,19 +16,7 @@ def render_to_pdf(template_src, context_dict={}):
     return None
 
 
-def generate_pdf(request, session, reg_no):
-    # table_sheet = TableSheet.objects.filter(session=session, reg_no=reg_no).first()
-    # context = {'table_sheet' : table_sheet}
-    
-    # pdf = render_to_pdf('main/gradesheet_view.html', context)
-    
-    # if pdf:
-    #     response = HttpResponse(pdf, content_type="application/pdf")
-    #     content = "inline; filename=TableSheet.pdf"
-    #     response['Content-Disposition'] = content 
-    #     return response 
-    # return HttpResponse("Not found")
-    
+def generate_pdf(request, session, reg_no):  
     batch = Batch.objects.get(session=session)
     batch_no = batch.batch_no
     student = Student.objects.get(reg_no=reg_no)

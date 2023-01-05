@@ -6,6 +6,36 @@
 
 {% block body %}
 
+<section class="m-5 p-5 w-25 bg-secondary text-white">
+    <h4>Search: </h4>
+    <form method="post"> {% csrf_token %}  
+        <input type="hidden" name="form_name" value="search_form" id="search_form">
+        <div class="form-group">
+          <label for="session">Session</label>
+          <select class="form-control" name="session" id="exampleFormControlSelect1">
+            {% for batch in all_batches %}
+                <option>{{batch.session}}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="form-group">
+            <label for="exampleFormControlSelect2">Semester</label>
+            <select class="form-control" name="semester_no" id="exampleFormControlSelect2">
+                {% for i in "12345678"|slice:":8" %}
+                  <option>{{i}}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="form-group">
+            <label for="exampleFormControlSelect3">Registration no</label>
+            <input type="text" class="form-control" name="reg_no" id="exampleFormControlInput3" placeholder="201XXXXXXX">
+        </div>
+        <a href="search/"> <button type="submit" class="btn btn-dark text-white">Search</button> </a> 
+    </form>
+</section>
+
+
+
 <section class="batch-list p-3">
     <h3>Batches: </h3>
     {% for batch in all_batches %}
@@ -49,6 +79,7 @@
     {% if request.user.is_superuser %}
     <form method="post" class="w-25 bg-light border border-primary p-3"> {% csrf_token %}  
         <h6>Add new batch</h6>
+        <input type="hidden" name="form_name" value="add_batch_form" id="add_batch_form">
         <div class="form-group">
             <label for="batch_no">Batch no</label>
             <select class="form-control" name="batch_no" id="batch_no1">
