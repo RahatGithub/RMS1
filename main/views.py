@@ -356,16 +356,3 @@ def index(request):
         all_batches.append(new_dict)
 
     return render(request, 'main/index.html', {'all_batches' : all_batches})
-
-
-
-def search(request):
-    session = request.POST['session']
-    semester_no = request.POST['semester_no']
-    reg_no = request.POST['reg_no']
-    # print(session, "sem:", semester_no, reg_no)
-    
-    batch = Batch.objects.filter(session=session).first()
-    
-    
-    return redirect('/main')
