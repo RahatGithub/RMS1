@@ -4,30 +4,30 @@ from .models import Batch, Semester, Course, Student, TheoryCourseResult, Sessio
 import json
 
 
-# def index(request):
-#     if request.method == "POST":  # when submitting the 'add batch' form
-#         batch_no = request.POST['batch_no']
-#         session = request.POST['session']
-#         batch_id = batch_no + '_' + session
-#         batch = Batch.objects.create(batch_id=batch_id, batch_no=batch_no, session=session)
-#         batches = Batch.objects.all()
-#         return render(request, 'main/index.html', {'batches' : batches})
+def index(request):
+    if request.method == "POST":  # when submitting the 'add batch' form
+        batch_no = request.POST['batch_no']
+        session = request.POST['session']
+        batch_id = batch_no + '_' + session
+        batch = Batch.objects.create(batch_id=batch_id, batch_no=batch_no, session=session)
+        batches = Batch.objects.all()
+        return render(request, 'main/index.html', {'batches' : batches})
 
-#     batches = Batch.objects.all()    
-#     all_batches = list()
-#     for batch in batches:
-#         new_dict = dict()
-#         semester_list = Semester.objects.filter(batch_no=batch.batch_no)
-#         new_list = list()
-#         for semester in semester_list: 
-#             new_list.append(semester)
-#         new_dict['batch_id'] = batch.batch_id
-#         new_dict['batch_no'] = batch.batch_no
-#         new_dict['session'] = batch.session
-#         new_dict['semesters'] = new_list
-#         all_batches.append(new_dict)
+    batches = Batch.objects.all()    
+    all_batches = list()
+    for batch in batches:
+        new_dict = dict()
+        semester_list = Semester.objects.filter(batch_no=batch.batch_no)
+        new_list = list()
+        for semester in semester_list: 
+            new_list.append(semester)
+        new_dict['batch_id'] = batch.batch_id
+        new_dict['batch_no'] = batch.batch_no
+        new_dict['session'] = batch.session
+        new_dict['semesters'] = new_list
+        all_batches.append(new_dict)
 
-#     return render(request, 'main/index.html', {'all_batches' : all_batches})
+    return render(request, 'main/index.html', {'all_batches' : all_batches})
 
 
 def semester_view(request, batch_no, semester_no):  
@@ -320,39 +320,3 @@ def gradesheet_view(request, session, reg_no):
     # for gs in gradesheet : print(gs, end="\n\n")
         
     return render(request, 'main/gradesheet_view.html', {'session':session, 'reg_no':reg_no, 'student_name':student_name, 'gradesheet':gradesheet})
-
-
-
-def index(request):
-    if request.method == "POST":  # when submitting the 'add batch' form
-        if request.POST['form_name'] == 'add_batch_form':
-            batch_no = request.POST['batch_no']
-            session = request.POST['session']
-            batch_id = batch_no + '_' + session
-            batch = Batch.objects.create(batch_id=batch_id, batch_no=batch_no, session=session)
-            batches = Batch.objects.all()
-            return render(request, 'main/index.html', {'batches' : batches})
-        
-        elif request.POST['form_name'] == 'search_form':
-            # session = request.POST['session']
-            # semester_no = request.POST['semester_no']
-            # reg_no = request.POST['reg_no']
-            # print(session, semester_no, reg_no)
-            # return redirect('/main')
-            search(request)
-
-    batches = Batch.objects.all()    
-    all_batches = list()
-    for batch in batches:
-        new_dict = dict()
-        semester_list = Semester.objects.filter(batch_no=batch.batch_no)
-        new_list = list()
-        for semester in semester_list: 
-            new_list.append(semester)
-        new_dict['batch_id'] = batch.batch_id
-        new_dict['batch_no'] = batch.batch_no
-        new_dict['session'] = batch.session
-        new_dict['semesters'] = new_list
-        all_batches.append(new_dict)
-
-    return render(request, 'main/index.html', {'all_batches' : all_batches})
