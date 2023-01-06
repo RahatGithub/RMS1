@@ -41,6 +41,14 @@ class Student(models.Model):
     remarks = models.CharField(max_length=500, default="")
 
 
+class Teacher(models.Model):
+    id = models.AutoField 
+    name = models.CharField(max_length=60, default="")
+    designation = models.CharField(max_length=60, default="")
+    institute = models.CharField(max_length=100, default="")
+    department = models.CharField(max_length=100, default="")
+
+
 class TheoryCourseResult(models.Model):
     id = models.AutoField 
     reg_no = models.CharField(max_length=10, default="")

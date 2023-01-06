@@ -15,10 +15,13 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from . import views
+from main.pdf import generate_pdf
 
 urlpatterns = [
+    path('', views.dashboard, name="dashboard"),
     path('admin/', admin.site.urls),
-    path('', include('accounts.urls')),
     path('main/', include('main.urls')),
-    path('accounts/', include('accounts.urls'))
+    path('accounts/', include('accounts.urls')),
+    path('gradesheet_view/<str:session>/<str:reg_no>', generate_pdf, name="generate_pdf")
 ]

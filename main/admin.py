@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Batch, Semester, Course, Student, TheoryCourseResult, SessionalCourseResult, Result
+from .models import Batch, Semester, Course, Student, Teacher, TheoryCourseResult, SessionalCourseResult, Result
 
 
 @admin.register(Batch)
@@ -20,6 +20,11 @@ class CourseAdmin(admin.ModelAdmin):
 @admin.register(Student)
 class StudentAdmin(admin.ModelAdmin):
     list_display = ("reg_no", "batch_no", "name")
+    
+    
+@admin.register(Teacher)
+class TeacherAdmin(admin.ModelAdmin):
+    list_display = ("name", "designation", "institute", "department")
     
 
 @admin.register(TheoryCourseResult)

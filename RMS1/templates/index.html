@@ -1,0 +1,130 @@
+{% extends 'main/base.html' %}
+
+{% block title %} Dashboard {% endblock %}
+
+
+
+{% block body %}
+
+<section class="gradesheet_generator m-5">
+    <form method="post" class="w-25 bg-secondary text-white p-3"> {% csrf_token %}  
+        <h6>Generate gradesheet PDF</h6>
+        <input type="hidden" name="form_name" value="gradesheet_generator_form" id="gradesheet_generator_form">
+        <div class="form-group">
+            <label for="session">Reg no</label>
+            <input type="text" name="reg_no" id="reg_no" required>
+        </div>
+        <button type="submit" class="btn btn-warning">Generate</button>
+    </form>
+</section>
+
+<section class="row m-5">
+    <section class="batch-list p-3 col">
+        <h4>Batches</h4>
+        {% for batch in batches %}
+        <div class="card bg-light m-3">
+            <div class="card-body">
+                <h5 class="card-title">{{batch.batch_no}}</h5>
+                <h6 class="card-text">{{batch.session}}</h6>
+                <ul class="list-unstyled d-flex">
+                    <h6>Semesters: </h6>
+                    {% for semester in batch.semesters %}
+                        {% if semester.batch_no == batch.batch_no  %}
+                            <li class="mx-2">
+                                <a href="main/semester_view/{{semester.batch_no}}/{{semester.semester_no}}">{{semester.semester_no}}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                    {% if request.user.is_superuser and batch.semesters|length < 8 %}
+                        <li class="mx-2">
+                            <a href="main/add_semester/{{batch.batch_no}}">+</a>
+                        </li>
+                    {% endif %}
+                </ul>
+                <p><a href="main/students_view/{{batch.batch_no}}">Students</a></p>
+            </div>
+        </div>
+        {% endfor %}
+
+        {% if request.user.is_superuser %}
+        <form method="post" class="w-50 bg-light border border-primary p-3"> {% csrf_token %}  
+            <h6>Add new batch</h6>
+            <input type="hidden" name="form_name" value="add_batch_form" id="add_batch_form">
+            <div class="form-group">
+                <label for="batch_no">Batch no</label>
+                <select class="form-control" name="batch_no" id="batch_no1">
+                <option>CSE-10</option>
+                <option>CSE-11</option>
+                <option>CSE-12</option>
+                <option>CSE-13</option>
+                <option>CSE-14</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="session">Session</label>
+                <select class="form-control" name="session" id="session1">
+                <option>2016-17</option>
+                <option>2017-18</option>
+                <option>2018-19</option>
+                <option>2019-20</option>
+                <option>2021-22</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Add</button>
+        </form>
+        {% endif %}
+    </section>
+
+    <section class="teacher-list p-3 col">
+        <h4>Teachers</h4>
+        {% for teacher in teachers %}
+        <div class="card bg-light m-3">
+            <div class="card-body">
+                <h5 class="card-title">{{teacher.name}}</h5>
+                <h6 class="card-text">{{teacher.designation}}</h6>
+                <h6 class="card-text">{{teacher.institute}}</h6>
+                <p><a href="#">View</a></p>
+            </div>
+        </div>
+        {% endfor %}
+
+        {% if request.user.is_superuser %}
+        <form method="post" class="w-50 bg-light border border-primary p-3"> {% csrf_token %}  
+            <h6>Add new teacher</h6>
+            <input type="hidden" name="form_name" value="add_teacher_form" id="add_teacher_form">
+            <div class="form-group">
+                <label for="batch_no">Name</label>
+                <input type="text" name="name">
+            </div>
+            <div class="form-group">
+                <label for="designation">Designation</label>
+                <input type="text" name="designation">
+            </div>
+            <div class="form-group">
+                <label for="department">Department</label>
+                <input type="text" name="department">
+            </div>
+            <div class="form-group">
+                <label for="institute">Institute</label>
+                <input type="text" name="institute">
+            </div>
+            <button type="submit" class="btn btn-primary">Add</button>
+        </form>
+        {% endif %}
+    </section>
+</section>
+
+{% endblock %}
+
+
+{% block js %}
+
+<!-- **This js code section should be used in all pages that has a form in it** -->
+<script>
+    if ( window.history.replaceState ) {
+        window.history.replaceState( null, null, window.location.href );
+    }
+</script>
+<!-- **** -->
+
+{% endblock %}
