@@ -116,6 +116,6 @@ def gradesheet_view(request, session, reg_no):
         
         gradesheet.append(a_semester)      
 
-    # for gs in gradesheet : print(gs, end="\n\n")
+    # for gs in gradesheet : print(gs, end="\n\n") 
         
     return render(request, 'main/gradesheet_view.html', {'session':session, 'reg_no':reg_no, 'student_name':student_name, 'gradesheet':gradesheet})

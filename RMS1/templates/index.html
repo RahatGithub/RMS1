@@ -23,6 +23,19 @@
         <h4>Batches</h4>
         {% for batch in batches %}
         <div class="card bg-light m-3">
+            <div class="card-header">
+                <ul class="nav nav-pills justify-content-end card-header-pills">
+                    <li class="nav-item">
+                        <!-- Button trigger modal -->
+                        <button type="button" class="btn btn-primary edit_batch_btn" data-toggle="modal" data-target="#edit_batch_modal_{{forloop.counter}}" id="edit_batch_btn_{{batch.session}}">
+                            Edit
+                        </button>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link">Delete</a>
+                    </li>
+                </ul>
+            </div>
             <div class="card-body">
                 <h5 class="card-title">{{batch.batch_no}}</h5>
                 <h6 class="card-text">{{batch.session}}</h6>
@@ -44,6 +57,7 @@
                 <p><a href="main/students_view/{{batch.batch_no}}">Students</a></p>
             </div>
         </div>
+        
         {% endfor %}
 
         {% if request.user.is_superuser %}
