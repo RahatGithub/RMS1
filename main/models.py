@@ -81,9 +81,23 @@ class SessionalCourseResult(models.Model):
 class Result(models.Model):
     id = models.AutoField 
     reg_no = models.CharField(max_length=10, default="")
-    batch_no = models.CharField(max_length=6, default="") # take session instead
+    batch_no = models.CharField(max_length=6, default="")
     semester_no = models.IntegerField(default=None)
     course_results = models.CharField(max_length=1000, default="")
     current_semester_credits = models.FloatField(default=0)
     current_semester_total_point = models.FloatField(default=0)
     current_semester_GPA = models.FloatField(default=0)
+
+
+class AssessmentResult(models.Model):
+    id = models.AutoField 
+    batch_no = models.CharField(max_length=6, default="")
+    semester_no = models.IntegerField(default=0)
+    course_code = models.CharField(max_length=8, default="")
+    # for tt:
+    tt_mode = models.CharField(max_length=10, default="")
+    tt_counting_on = models.IntegerField(default=0)
+    tt_results = models.CharField(max_length=1000, default="")
+    # for assignment:
+    assignment_counting_on = models.IntegerField(default=0)
+    assignment_results = models.CharField(max_length=1000, default="")

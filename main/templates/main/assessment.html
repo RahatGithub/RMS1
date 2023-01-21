@@ -1,0 +1,285 @@
+{% extends 'main/base.html' %}
+
+{% block title %} assessment {% endblock %}
+
+
+{% block body %}
+
+<section class="row">
+    <!-- col 1 : term tests -->
+    <div class="col border-right">
+        <div class="alert alert-dark">
+            <h4>Term tests</h4>
+        </div>
+        <!-- term tests info (mode & counting on) -->
+        <div>
+            <h6>Mode: <span class="text-success">Normal</span></h6>
+            <h6>counting on: <span class="text-success">20</span></h6>
+            <!-- change tt-info modal trigger -->
+            <button type="button" class="btn btn-dark" data-toggle="modal" data-target="#ChangeTTModal">
+                Change
+            </button>
+        </div>
+
+        <!-- ChangeTTModal starts -->
+        <div class="modal fade" id="ChangeTTModal" tabindex="-1" aria-labelledby="ChangeTTLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                    <h5 class="modal-title" id="ChangeTTLabel">Change TT info</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    </div>
+                    <div class="modal-body">
+                        <form action="" method="post" class="bg-light p-5 border border-dark"> {% csrf_token %}
+                            <input type="hidden" name="form_name" value="tt_info_submit_form">
+                            <div class="form-group">
+                                <label for="" class="form-label">Mode</label>
+                                <select name="tt_mode" class="form-control">
+                                    <option value="normal">Normal</option>
+                                    <option value="best_one">Best one</option>
+                                    <option value="best_two">Best two</option>
+                                    <option value="average">Average</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="" class="form-label">Counting on</label>
+                                <select name="counting_on" class="form-control">
+                                    <option value="0">0</option>
+                                    <option value="10">10</option>
+                                    <option value="20">20</option>
+                                    <option value="30">30</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-dark">Save</button>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- ChangeTTModal ends -->
+
+
+        <!-- term test wise results -->
+        {% for tt in tt_results %}
+        <div class="border border-info p-5">
+            <h4>Term test {{forloop.counter}}</h4>
+            <h6>Marks: 20</h6>
+            <div class="d-flex justify-content-end">
+                <button class="btn btn-success">Add</button>
+            </div>
+            <table class="table table-hover bg-light">
+                <thead class="thead-light">
+                  <tr>
+                    <th scope="col">Reg_no</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Obtained</th>
+                  </tr>
+                </thead>
+                <tbody>
+                    <!-- {% for record in tt_results %} -->
+                    <tr>
+                        <td>{{record.0}}</td>
+                        <td>{{record.1}}</td>
+                        <td>{{record.1}}</td>
+                    </tr>
+                    <!-- {% endfor %} -->
+                </tbody>
+            </table>
+        </div>
+        {% endfor %}
+        <div class="d-flex justify-content-center my-3">
+            <!-- add new tt modal trigger -->
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#AddTTModal">
+                Add new term test
+            </button>
+        </div>
+    </div>
+    <!-- col 2 : assignments -->
+    <div class="col border-right">
+        <div class="alert alert-dark">
+            <h4>Assignments</h4>
+        </div>
+        <!-- assignment info (mode & counting on) -->
+        <div>
+            <h6>Mode: <span class="text-success">Normal</span></h6>
+            <h6>counting on: <span class="text-success">10</span></h6>
+            <!-- change tt-info modal trigger -->
+            <button type="button" class="btn btn-dark" data-toggle="modal" data-target="#ChangeAssignmentModal">
+                Change
+            </button>
+        </div>
+
+        <!-- assignment wise results -->
+        {% for assignment in assignment_results %}
+        <div class="border border-info p-5">
+            <h4>Assignment {{forloop.counter}}</h4>
+            <h6>Marks: {{assignment.total_marks}}</h6>
+            <div class="d-flex justify-content-end">
+                <button class="btn btn-success">Add</button>
+            </div>
+            <table class="table table-hover bg-light">
+                <thead class="thead-light">
+                  <tr>
+                    <th scope="col">Reg_no</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Obtained</th>
+                  </tr>
+                </thead>
+                <tbody>
+                    {% for result in assignment.results %}
+                    <tr>
+                        <td>{{result.0}}</td>
+                        <td>{{result.0}}</td>
+                        <td>{{result.1}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endfor %}
+        <div class="d-flex justify-content-center my-3">
+            <!-- add new assignment modal trigger -->
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#AddAssignmentModal">
+                Add new assignment
+            </button>
+        </div>
+    </div>
+
+    <!-- ChangeAssignmentModal starts -->
+    <div class="modal fade" id="ChangeAssignmentModal" tabindex="-1" aria-labelledby="ChangeAssignmentLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                <h5 class="modal-title" id="ChangeAssignmentLabel">Change assignment info</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+                </div>
+                <div class="modal-body">
+                    <form action="" method="post" class="bg-light p-5 border border-dark"> {% csrf_token %}
+                        <input type="hidden" name="form_name" value="tt_info_submit_form">
+                        <div class="form-group">
+                            <label for="" class="form-label">Mode</label>
+                            <select name="tt_mode" class="form-control">
+                                <option value="normal">Normal</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="" class="form-label">Counting on</label>
+                            <select name="counting_on" class="form-control">
+                                <option value="0">0</option>
+                                <option value="10">10</option>
+                                <option value="20">20</option>
+                                <option value="30">30</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-dark">Save</button>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- ChangeAssignmentModal ends -->
+
+    <!-- col 3 : attendance -->
+    <div class="col">
+        <form action="" method="post" class="bg-light p-5 border border-dark"> {% csrf_token %}
+            <input type="hidden" name="form_name" value="attendance_info_submit_form">
+            <div class="alert alert-dark">
+                Attendance 
+            </div>
+            <div class="form-group">
+                <label for="" class="form-label">Mode</label>
+                <select name="attendance_mode" class="form-control">
+                    <option value="normal">Normal</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="" class="form-label">Counting on</label>
+                <select name="counting_on" class="form-control">
+                    <option value="0">0</option>
+                    <option value="10">10</option>
+                    <option value="20">20</option>
+                    <option value="30">30</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-dark">Save</button>
+        </form>
+    </div>
+</section>
+
+
+<!-- AddTTModal starts -->
+<div class="modal fade" id="AddTTModal" tabindex="-1" aria-labelledby="AddTTLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="AddTTLabel">Add new term test</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            </div>
+            <div class="modal-body">
+                <form action="" method="post" class="bg-light p-5 border border-dark"> {% csrf_token %}
+                    <input type="hidden" name="form_name" value="add_tt_form">
+                    <div class="form-group">
+                        <label for="" class="form-label">Total Marks</label>
+                        <input type="number" name="total_marks" class="form-control">
+                    </div>
+                    <button type="submit" class="btn btn-dark">Add</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- AddTTModal ends -->
+
+
+<!-- AddAssignmentModal starts -->
+<div class="modal fade" id="AddAssignmentModal" tabindex="-1" aria-labelledby="AddAssignmentLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+            <h5 class="modal-title" id="AddAssignmentLabel">Add new assignment</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+            </div>
+            <div class="modal-body">
+                <form action="" method="post" class="bg-light p-5 border border-dark"> {% csrf_token %}
+                    <input type="hidden" name="form_name" value="add_assignment_form">
+                    <div class="form-group">
+                        <label for="" class="form-label">Total Marks</label>
+                        <input type="number" name="total_marks" class="form-control">
+                    </div>
+                    <button type="submit" class="btn btn-dark">Add</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- AddAssignmentModal ends -->
+
+{% endblock %}
+
+
+
+{% block js %}
+
+<!-- **This js code section should be used in all pages that has a form in it** -->
+<script>
+    if ( window.history.replaceState ) {
+        window.history.replaceState( null, null, window.location.href );
+    }
+</script>
+<!-- **** -->
+
+{% endblock %}

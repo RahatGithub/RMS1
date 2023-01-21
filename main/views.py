@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from django.http import HttpResponse
-from .models import Batch, Semester, Course, Student, TheoryCourseResult, SessionalCourseResult, Result
+from .models import Batch, Semester, Course, Student, TheoryCourseResult, SessionalCourseResult, Result, AssessmentResult
 import json
 
 
@@ -320,3 +320,129 @@ def gradesheet_view(request, session, reg_no):
     for gs in gradesheet : print(gs, end="\n\n")
         
     return render(request, 'main/gradesheet_view.html', {'session':session, 'reg_no':reg_no, 'student_name':student_name, 'gradesheet':gradesheet})
+
+
+
+
+# ************ EVERYTHING BELOW IS EXPERIMENTAL *************
+
+
+
+
+def assessments(request, batch_no, semester_no, course_code):
+    if request.method == "POST":
+        if request.POST['form_name'] == 'add_assignment_form':
+            total_marks = request.POST['total_marks']
+            try: # if there is already an instance of AssessmentResult for this course
+                assessment = AssessmentResult.objects.get(batch_no=batch_no, semester_no=semester_no, course_code=course_code)
+                assignment_results = json.loads(assessment.assignment_results)
+                a_assignment = dict()
+                a_assignment['total_marks'] = total_marks
+                a_assignment['results'] = list()
+                assignment_results.append(a_assignment)
+                assignment_results_json = json.dumps(assignment_results)
+                assessment.assignment_results = assignment_results_json
+                assessment.save() 
+                tt_results = json.loads(assessment.tt_results)
+            except: # if there is no instance of AssessmentResult for this course
+                assignment_results = list()
+                a_assignment = dict()
+                a_assignment['total_marks'] = total_marks
+                a_assignment['results'] = list()
+                assignment_results.append(a_assignment)
+                assignment_results_json = json.dumps(assignment_results)
+                tt_results = list()
+                AssessmentResult.objects.create(
+                    batch_no = batch_no,
+                    semester_no = semester_no,
+                    course_code = course_code,
+                    tt_mode = "",
+                    tt_counting_on = 0,
+                    tt_results = "[]",
+                    assignment_counting_on = 0,
+                    assignment_results = assignment_results_json
+                )
+
+            context = {
+                'tt_results' : tt_results,
+                'assignment_results' : assignment_results
+            }
+            print("tt-res(POST):", tt_results)
+            return render(request, 'main/assessment.html', context)
+        
+        elif request.POST['form_name'] == 'add_tt_form':
+            total_marks = request.POST['total_marks']
+            try: # if there is already an instance of AssessmentResult for this course
+                assessment = AssessmentResult.objects.get(batch_no=batch_no, semester_no=semester_no, course_code=course_code)
+                tt_results = json.loads(assessment.tt_results)
+                a_tt = dict()
+                a_tt['total_marks'] = total_marks
+                a_tt['results'] = list()
+                tt_results.append(a_tt)
+                tt_results_json = json.dumps(tt_results)
+                assessment.tt_results = tt_results_json
+                assessment.save() 
+                assignment_results = json.loads(assessment.assignment_results)
+            except: # if there is no instance of AssessmentResult for this course
+                tt_results = list()
+                a_tt = dict()
+                a_tt['total_marks'] = total_marks
+                a_tt['results'] = list()
+                tt_results.append(a_tt)
+                tt_results_json = json.dumps(tt_results)
+                assignment_results = list()
+                AssessmentResult.objects.create(
+                    batch_no = batch_no,
+                    semester_no = semester_no,
+                    course_code = course_code,
+                    tt_mode = "",
+                    tt_counting_on = 0,
+                    tt_results = tt_results_json,
+                    assignment_counting_on = 0,
+                    assignment_results = "[]"
+                )
+
+            context = {
+                'tt_results' : tt_results,
+                'assignment_results' : assignment_results
+            }
+            print("tt-res(POST):", tt_results)
+            return render(request, 'main/assessment.html', context)
+
+
+    # if not a POST request:
+    try:
+        assessment = AssessmentResult.objects.get(batch_no=batch_no, semester_no=semester_no, course_code=course_code)
+        # for term tests:
+        tt_results = json.loads(assessment.tt_results)
+        num_of_tt = len(tt_results)
+        # for assignments:
+        assignment_results = json.loads(assessment.assignment_results)
+        num_of_assignment = len(assignment_results)
+        print("into try block of GET req")
+
+    except:
+        tt_results = list()
+        assignment_results = list()
+        print("into except block of GET req")
+    
+
+    context = {
+        'batch_no' : batch_no,
+        'semester_no' : semester_no,
+        'course_code' : course_code,
+        'tt_results' : tt_results,
+        'assignment_results' : assignment_results
+    }
+
+    print('tt-res(GET):', tt_results)
+    return render(request, 'main/assessment.html', context)
+
+
+
+
+
+
+
+
+
