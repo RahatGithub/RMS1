@@ -334,7 +334,7 @@ def assessments(request, batch_no, semester_no, course_code):
 
     if request.method == "POST":
         if request.POST['form_name'] == 'add_tt_form':
-            total_marks = request.POST['total_marks']
+            total_marks = int(request.POST['total_marks'])
             try: # if there is already an instance of AssessmentResult for this course
                 assessment = AssessmentResult.objects.get(batch_no=batch_no, semester_no=semester_no, course_code=course_code)
                 tt_results = json.loads(assessment.tt_results)
@@ -383,7 +383,7 @@ def assessments(request, batch_no, semester_no, course_code):
             return render(request, 'main/assessment.html', context)
 
         elif request.POST['form_name'] == 'add_assignment_form':
-            total_marks = request.POST['total_marks']
+            total_marks = int(request.POST['total_marks'])
             try: # if there is already an instance of AssessmentResult for this course
                 assessment = AssessmentResult.objects.get(batch_no=batch_no, semester_no=semester_no, course_code=course_code)
                 assignment_results = json.loads(assessment.assignment_results)
@@ -604,9 +604,90 @@ def assessments(request, batch_no, semester_no, course_code):
 
 
 
+def overall_assessment(request, batch_no, semester_no, course_code):
+    assessment = AssessmentResult.objects.get(batch_no=batch_no, semester_no=semester_no, course_code=course_code)
+    tt_results = json.loads(assessment.tt_results)
+    assignment_results = json.loads(assessment.assignment_results)
+    tt_mode = assessment.tt_mode 
+    tt_counting_on = assessment.tt_counting_on
+    assignment_counting_on = assessment.assignment_counting_on
+    students = Student.objects.filter(batch_no=batch_no)
+    
+    full_batch_overall_assessment_marks = list()
+
+    
+    for i,student in enumerate(students):
+        a_std = list() 
+        a_std.append(student.reg_no)
+        a_std.append(student.name)
+        all_tt_marks = list()
+        all_assignment_marks = list()
+
+        # calculating tt marks
+        for tt_res in tt_results:
+            obtained_marks = tt_res['results'][i][2]
+            total_marks = tt_res['total_marks']
+            all_tt_marks.append([obtained_marks, total_marks])
+        a_std_final_tt_marks = calculate_overall_marks(tt_mode, tt_counting_on, all_tt_marks)
+        a_std.append(a_std_final_tt_marks)
+
+        # calculating assignment marks
+        for ass_res in assignment_results:
+            obtained_marks = ass_res['results'][i][2]
+            total_marks = ass_res['total_marks']
+            all_assignment_marks.append([obtained_marks, total_marks])
+        a_std_final_assignment_marks = calculate_overall_marks("average", assignment_counting_on, all_assignment_marks)
+        a_std.append(a_std_final_assignment_marks)
+    
+        # finally getting all records of tt and assignments
+        full_batch_overall_assessment_marks.append(a_std)
+
+
+
+    context = {
+        'batch_no' : batch_no,
+        'semester_no' : semester_no,
+        'course_code' : course_code,
+        'full_batch_overall_assessment_marks' : full_batch_overall_assessment_marks
+    }
+    
+    return render(request, 'main/overall_assessment.html', context)
+    # return HttpResponse(full_batch_overall_assessment_marks)
+    
 
 
 
 
+from math import ceil
 
+def calculate_overall_marks(mode, counting_on, results):  # e.g. ("normal", 20, [[8,10], [9,10]])
+    final_marks = 0
+    if mode == "normal":
+        for result in results:
+            final_marks += result[0]
 
+    elif mode == "average":
+        num = len(results) 
+        total_marks = 0
+        for result in results:
+            total_marks += int((counting_on/result[1])*result[0])
+        try:
+            final_marks = ceil(total_marks/num)
+        except:
+            final_marks = 0
+
+    elif mode == "best_one":
+        marks = [] 
+        for result in results:
+            marks.append(int((counting_on/result[1])*result[0]))
+        final_marks = max(marks)
+
+    elif mode == "best_two":
+        marks = [] 
+        for result in results:
+            marks.append(int((counting_on/result[1])*result[0])) 
+        best = marks.pop(marks.index(max(marks))) // int(counting_on/result[1])
+        second_best = marks.pop(marks.index(max(marks))) // int(counting_on/result[1])
+        final_marks = (best + second_best) // 2
+
+    return final_marks

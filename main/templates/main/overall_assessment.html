@@ -1,0 +1,36 @@
+{% extends 'main/base.html' %}
+
+{% block title %} overall assessment {% endblock %}
+
+
+{% block body %}
+
+<div class="bg-dark text-white p-3 m-5 text-center w-25">
+    <h4>{{batch_no}}</h4>
+    <h4>{{semester_no}}</h4>
+    <h4>{{course_code}}</h4>
+</div>
+
+<table class="table table-hover bg-light">
+    <thead>
+      <tr>
+        <th scope="col">Registration</th>
+        <th scope="col">Name</th>
+        <th scope="col">TT</th>
+        <th scope="col">Assignment</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for record in full_batch_overall_assessment_marks %}
+        <tr>
+            <td>{{record.0}}</td>
+            <td>{{record.1}}</td>
+            <td>{{record.2}}</td>
+            <td>{{record.3}}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+
+{% endblock %}
