@@ -95,9 +95,12 @@ class AssessmentResult(models.Model):
     semester_no = models.IntegerField(default=0)
     course_code = models.CharField(max_length=8, default="")
     # for tt:
-    tt_mode = models.CharField(max_length=10, default="normal")
+    tt_mode = models.CharField(max_length=10, default="average")
     tt_counting_on = models.IntegerField(default=20)
     tt_results = models.CharField(max_length=1000, default="")
     # for assignment:
     assignment_counting_on = models.IntegerField(default=10)
     assignment_results = models.CharField(max_length=1000, default="")
+    # for attendance:
+    attendance_counting_on = models.IntegerField(default=10)
+    attendance_results = models.CharField(max_length=1000, default="")

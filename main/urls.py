@@ -14,5 +14,6 @@ urlpatterns = [
 
     # testing of assessment calculation
     path('assessments/<str:batch_no>/<int:semester_no>/<str:course_code>', views.assessments, name="assessments"),
-    path('assessments/<str:batch_no>/<int:semester_no>/<str:course_code>/overall_assessment', views.overall_assessment, name="overall_assessment")
+    path('assessments/<str:batch_no>/<int:semester_no>/<str:course_code>/overall_assessment', views.overall_assessment, name="overall_assessment"),
+    path('assessments/<str:batch_no>/<int:semester_no>/<str:course_code>/attendance', views.add_attendance, name="add_attendance")
 ]
