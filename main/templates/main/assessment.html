@@ -5,6 +5,12 @@
 
 {% block body %}
 
+<div class="d-flex justify-content-center p-3 m-3">
+    <a href="/main/assessments/{{batch_no}}/{{semester_no}}/{{course_code}}/overall_assessment">
+        <button class="btn btn-danger">Calculate overall assessment</button>
+    </a>
+</div>
+
 <section class="row">
     <!-- col 1 : term tests -->
     <div class="col border-right">
