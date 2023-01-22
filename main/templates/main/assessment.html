@@ -13,8 +13,20 @@
         </div>
         <!-- term tests info (mode & counting on) -->
         <div>
-            <h6>Mode: <span class="text-success">Normal</span></h6>
-            <h6>counting on: <span class="text-success">20</span></h6>
+            <h6>Mode: 
+                <span class="text-success">
+                    {% if tt_mode == 'normal' %} 
+                        Normal 
+                    {% elif tt_mode == 'best_on' %}
+                        Best One 
+                    {% elif tt_mode == 'best_two' %}
+                        Best Two 
+                    {% elif tt_mode == 'average' %}
+                        Average 
+                    {% endif %}
+                </span>
+            </h6>
+            <h6>counting on: <span class="text-success">{{tt_counting_on}}</span></h6>
             <!-- change tt-info modal trigger -->
             <button type="button" class="btn btn-dark" data-toggle="modal" data-target="#ChangeTTModal">
                 Change
@@ -55,9 +67,6 @@
                             <button type="submit" class="btn btn-dark">Save</button>
                         </form>
                     </div>
-                    <div class="modal-footer">
-                    <button type="button" class="btn btn-primary">Save changes</button>
-                    </div>
                 </div>
             </div>
         </div>
@@ -68,9 +77,12 @@
         {% for tt in tt_results %}
         <div class="border border-info p-5">
             <h4>Term test {{forloop.counter}}</h4>
-            <h6>Marks: 20</h6>
+            <h6>Marks: {{tt.total_marks}}</h6>
             <div class="d-flex justify-content-end">
-                <button class="btn btn-success">Add</button>
+                <!-- add tt marks modal trigger -->
+                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#AddTTMarksModal{{forloop.counter}}">
+                    Add
+                </button>
             </div>
             <table class="table table-hover bg-light">
                 <thead class="thead-light">
@@ -81,16 +93,52 @@
                   </tr>
                 </thead>
                 <tbody>
-                    <!-- {% for record in tt_results %} -->
+                    {% for result in tt.results %}
                     <tr>
-                        <td>{{record.0}}</td>
-                        <td>{{record.1}}</td>
-                        <td>{{record.1}}</td>
+                        <td>{{result.0}}</td>
+                        <td>{{result.1}}</td>
+                        <td>{{result.2}}</td>
                     </tr>
-                    <!-- {% endfor %} -->
+                    {% endfor %}
                 </tbody>
             </table>
         </div>
+
+        <!-- AddTTMarksModal starts -->
+        <div class="modal fade" id="AddTTMarksModal{{forloop.counter}}" tabindex="-1" aria-labelledby="AddTTMarksLabel{{forloop.counter}}" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                    <h5 class="modal-title" id="AddTTMarksLabel{{forloop.counter}}">Add TT {{forloop.counter}} marks</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    </div>
+                    <div class="modal-body">
+                        <form action="" method="post" class="bg-light p-5 border border-dark"> {% csrf_token %}
+                            <input type="hidden" name="form_name" value="add_tt_marks_form">
+                            <input type="hidden" name="tt_no" value="{{forloop.counter}}">
+                            <div class="form-group">
+                                <label for="" class="form-label">Reg no</label>
+                                <select name="reg_no" class="form-control">
+                                    {% for student in students %}
+                                    <option value={{student.reg_no}}>{{student.reg_no}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="" class="form-label">Obtained marks</label>
+                                <input type="text" name="obtained_marks" class="form-control">
+                            </div>
+                            <button type="submit" class="btn btn-dark">Add</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- AddTTMarksModal ends -->
+
+
         {% endfor %}
         <div class="d-flex justify-content-center my-3">
             <!-- add new tt modal trigger -->
@@ -107,8 +155,8 @@
         <!-- assignment info (mode & counting on) -->
         <div>
             <h6>Mode: <span class="text-success">Normal</span></h6>
-            <h6>counting on: <span class="text-success">10</span></h6>
-            <!-- change tt-info modal trigger -->
+            <h6>counting on: <span class="text-success">{{assignment_counting_on}}</span></h6>
+            <!-- change assignment-info modal trigger -->
             <button type="button" class="btn btn-dark" data-toggle="modal" data-target="#ChangeAssignmentModal">
                 Change
             </button>
@@ -120,7 +168,10 @@
             <h4>Assignment {{forloop.counter}}</h4>
             <h6>Marks: {{assignment.total_marks}}</h6>
             <div class="d-flex justify-content-end">
-                <button class="btn btn-success">Add</button>
+                <!-- add assignment marks modal trigger -->
+                <button type="button" class="btn btn-success" data-toggle="modal" data-target="#AddAssignmentMarksModal{{forloop.counter}}">
+                    Add
+                </button>
             </div>
             <table class="table table-hover bg-light">
                 <thead class="thead-light">
@@ -134,13 +185,48 @@
                     {% for result in assignment.results %}
                     <tr>
                         <td>{{result.0}}</td>
-                        <td>{{result.0}}</td>
                         <td>{{result.1}}</td>
+                        <td>{{result.2}}</td>
                     </tr>
                     {% endfor %}
                 </tbody>
             </table>
         </div>
+
+        <!-- AddAssignmentMarksModal starts -->
+        <div class="modal fade" id="AddAssignmentMarksModal{{forloop.counter}}" tabindex="-1" aria-labelledby="AddAssignmentMarksLabel{{forloop.counter}}" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                    <h5 class="modal-title" id="AddAssignmentMarksLabel{{forloop.counter}}">Add Assignment {{forloop.counter}} marks</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    </div>
+                    <div class="modal-body">
+                        <form action="" method="post" class="bg-light p-5 border border-dark"> {% csrf_token %}
+                            <input type="hidden" name="form_name" value="add_assignment_marks_form">
+                            <input type="hidden" name="assignment_no" value="{{forloop.counter}}">
+                            <div class="form-group">
+                                <label for="" class="form-label">Reg no</label>
+                                <select name="reg_no" class="form-control">
+                                    {% for student in students %}
+                                    <option value={{student.reg_no}}>{{student.reg_no}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="" class="form-label">Obtained marks</label>
+                                <input type="text" name="obtained_marks" class="form-control">
+                            </div>
+                            <button type="submit" class="btn btn-dark">Add</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- AddAssignmentMarksModal ends -->
+
         {% endfor %}
         <div class="d-flex justify-content-center my-3">
             <!-- add new assignment modal trigger -->
@@ -162,10 +248,10 @@
                 </div>
                 <div class="modal-body">
                     <form action="" method="post" class="bg-light p-5 border border-dark"> {% csrf_token %}
-                        <input type="hidden" name="form_name" value="tt_info_submit_form">
+                        <input type="hidden" name="form_name" value="assignment_info_submit_form">
                         <div class="form-group">
                             <label for="" class="form-label">Mode</label>
-                            <select name="tt_mode" class="form-control">
+                            <select name="assignment_mode" class="form-control">
                                 <option value="normal">Normal</option>
                             </select>
                         </div>
@@ -180,9 +266,6 @@
                         </div>
                         <button type="submit" class="btn btn-dark">Save</button>
                     </form>
-                </div>
-                <div class="modal-footer">
-                <button type="button" class="btn btn-primary">Save changes</button>
                 </div>
             </div>
         </div>
